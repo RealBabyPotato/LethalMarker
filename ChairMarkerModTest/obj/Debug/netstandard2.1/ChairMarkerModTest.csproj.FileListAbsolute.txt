@@ -116,3 +116,4 @@ D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstanda
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.csproj.CopyComplete
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.pdb
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.sourcelink.json
