@@ -52,7 +52,7 @@ namespace ChairMarkerModTest
 
         private void SetupCubeThing()
         {
-            Item CubeThing = bundle.LoadAsset<Item>("Assets/Mod/Cube Thing.asset");
+            Item CubeThing = bundle.LoadAsset<Item>("Assets/Mod/Cube Thing/Cube Thing.asset");
             if (CubeThing == null) return;
 
             CubeThing.creditsWorth = 30;
@@ -73,7 +73,7 @@ namespace ChairMarkerModTest
             TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();
             node.clearPreviousText = true;
             node.displayText = "This is info about Cube Thing.\n\n";
-            Items.RegisterShopItem(CubeThing, null, null, node, 0);
+            Items.RegisterShopItem(CubeThing, null, null, node, 20);
         }
     }
 }
