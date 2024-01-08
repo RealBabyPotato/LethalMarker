@@ -36,7 +36,7 @@ namespace ChairMarkerModTest
             SetupItems();
 
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
-            Logger.LogInfo("Patched Cmod");
+            Logger.LogInfo("CMOD Loaded!");
         }
 
         private void SetupItems() // this is messy. oh well.
