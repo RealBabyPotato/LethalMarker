@@ -14,12 +14,10 @@ namespace ChairMarkerModTest.Behaviours
             base.OnHitGround();
             Debug.Log(lastPlayer);
 
-            // if (lastPlayer == null) return;
-
-            if (weatherChange == 6) { weatherChange = 0; }
+            if (weatherChange == 5) { weatherChange = -1; }
             else { weatherChange++; }
 
-            HUDManager.Instance.DisplayTip("CHANGING WEATHER TYPE", "New weather type: " + (LevelWeatherType)weatherChange, false, false, "LC_Tip1");
+            HUDManager.Instance.DisplayTip("WEATHER", "Weather type: " + (LevelWeatherType)weatherChange, false, false, "LC_Tip1");
         }
 
         public override void OnGainedOwnership()
@@ -31,59 +29,19 @@ namespace ChairMarkerModTest.Behaviours
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
             base.ItemActivate(used, buttonDown);
-            if (buttonDown)
+            if (buttonDown && playerHeldBy != null)
             {
-                if (playerHeldBy != null)
+                if (StartOfRound.Instance.inShipPhase)
                 {
-                    TimeOfDay.Instance.currentLevelWeather = (LevelWeatherType)weatherChange;
-                    /*if(Random.Range(0, 0) == 0)
-                    {
-                        
-                        // Landmine.S
-                        //playerHeldBy.KillPlayer(Vector3.zero, true, CauseOfDeath.Electrocution);
-                    }*/
-                    HUDManager.Instance.DisplayTip("asdf", "fff" + (LevelWeatherType)weatherChange, false, false, "LC_Tip1");
+                    RoundManager.Instance.currentLevel.currentWeather = (LevelWeatherType)weatherChange;
+                    HUDManager.Instance.DisplayTip("CHANGING WEATHER TYPE", "New weather: " + (LevelWeatherType)weatherChange, false, false, "LC_Tip1");
+                    playerHeldBy.DiscardHeldObject();
+                    Destroy(gameObject);
+                } else {
+                    HUDManager.Instance.DisplayTip("WEATHER TOTEM ERROR", "You're not in orbit!", true, false, "LC_Tip1");
                 }
-                else
-                {
-                    Debug.Log("playerHeldBy null!");
-                }
+
             }
         }
-
-        /*private void PlayThunderEffects(Vector3 strikePosition, AudioSource audio)
-        {
-            PlayerControllerB playerControllerB = GameNetworkManager.Instance.localPlayerController;
-            if (playerControllerB.isPlayerDead && playerControllerB.spectatedPlayerScript != null)
-            {
-                playerControllerB = playerControllerB.spectatedPlayerScript;
-            }
-            float num = Vector3.Distance(playerControllerB.gameplayCamera.transform.position, strikePosition);
-            bool flag = false;
-            if (num < 40f)
-            {
-                HUDManager.Instance.ShakeCamera(ScreenShakeType.Big);
-            }
-            else if (num < 110f)
-            {
-                HUDManager.Instance.ShakeCamera(ScreenShakeType.Long);
-            }
-            else
-            {
-                flag = true;
-            }
-            AudioClip[] array = ((!flag) ? strikeSFX : distantThunderSFX);
-            if (!playerControllerB.isInsideFactory)
-            {
-                RoundManager.PlayRandomClip(audio, array);
-            }
-            WalkieTalkie.TransmitOneShotAudio(audio, array[UnityEngine.Random.Range(0, array.Length)]);
-            if (StartOfRound.Instance.shipBounds.bounds.Contains(strikePosition))
-            {
-                StartOfRound.Instance.shipAnimatorObject.GetComponent<Animator>().SetTrigger("shipShake");
-                RoundManager.PlayRandomClip(StartOfRound.Instance.ship3DAudio, StartOfRound.Instance.shipCreakSFX, randomize: false);
-                StartOfRound.Instance.PowerSurgeShip();
-            }
-        }*/
-    }
+   }
 }
