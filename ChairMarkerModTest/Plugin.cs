@@ -50,7 +50,7 @@ namespace ChairMarkerModTest
             
         }
 
-        private void SetupCubeThing()
+        private void SetupCubeThing() // TODO: refactor this/change to weather totem, also make an asset
         {
             Item CubeThing = bundle.LoadAsset<Item>("Assets/Mod/Cube Thing/Cube Thing.asset");
             if (CubeThing == null) return;
