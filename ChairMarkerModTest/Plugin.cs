@@ -54,6 +54,7 @@ namespace ChairMarkerModTest
         private void SetupGrenade()
         {
             Item FragGrenade = bundle.LoadAsset<Item>("Assets/Mod/Frag Grenade/FragGrenade.asset");
+
             if (FragGrenade == null) return;
 
             FragGrenade.minValue = 20;
@@ -67,6 +68,8 @@ namespace ChairMarkerModTest
             fragScript.itemProperties = FragGrenade;
             fragScript.grabbable = true;
             fragScript.grabbableToEnemies = true;
+
+            fragScript.TimeToExplode = 1f;
 
             NetworkPrefabs.RegisterNetworkPrefab(FragGrenade.spawnPrefab);
 
