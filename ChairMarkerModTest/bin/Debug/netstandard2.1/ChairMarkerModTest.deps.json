@@ -14,10 +14,13 @@
           "BepInEx": "5.4.22.0",
           "LethalLib": "1.0.0.0",
           "Unity.Netcode.Runtime": "0.0.0.0",
+          "Unity.RenderPipelines.Core.Runtime": "0.0.0.0",
+          "UnityEngine.AnimationModule": "0.0.0.0",
           "UnityEngine.AssetBundleModule": "0.0.0.0",
           "UnityEngine.AudioModule": "0.0.0.0",
           "UnityEngine.CoreModule": "0.0.0.0",
-          "UnityEngine": "0.0.0.0"
+          "UnityEngine": "0.0.0.0",
+          "UnityEngine.PhysicsModule": "0.0.0.0"
         },
         "runtime": {
           "ChairMarkerModTest.dll": {}
@@ -63,6 +66,22 @@
           }
         }
       },
+      "Unity.RenderPipelines.Core.Runtime/0.0.0.0": {
+        "runtime": {
+          "Unity.RenderPipelines.Core.Runtime.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "UnityEngine.AnimationModule/0.0.0.0": {
+        "runtime": {
+          "UnityEngine.AnimationModule.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "UnityEngine.AssetBundleModule/0.0.0.0": {
         "runtime": {
           "UnityEngine.AssetBundleModule.dll": {
@@ -95,6 +114,14 @@
           }
         }
       },
+      "UnityEngine.PhysicsModule/0.0.0.0": {
+        "runtime": {
+          "UnityEngine.PhysicsModule.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "Mono.Cecil/0.10.4.0": {
         "runtime": {
           "Mono.Cecil.dll": {
@@ -119,25 +146,9 @@
           }
         }
       },
-      "UnityEngine.AnimationModule/0.0.0.0": {
-        "runtime": {
-          "UnityEngine.AnimationModule.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
       "Unity.Animation.Rigging/0.0.0.0": {
         "runtime": {
           "Unity.Animation.Rigging.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
-      "UnityEngine.PhysicsModule/0.0.0.0": {
-        "runtime": {
-          "UnityEngine.PhysicsModule.dll": {
             "assemblyVersion": "0.0.0.0",
             "fileVersion": "0.0.0.0"
           }
@@ -151,11 +162,27 @@
           }
         }
       },
+      "UnityEngine.UI/1.0.0.0": {
+        "runtime": {
+          "UnityEngine.UI.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Unity.TextMeshPro/0.0.0.0": {
         "runtime": {
           "Unity.TextMeshPro.dll": {
             "assemblyVersion": "0.0.0.0",
             "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Facepunch.Steamworks.Win64/1.0.0.0": {
+        "runtime": {
+          "Facepunch.Steamworks.Win64.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
           }
         }
       },
@@ -199,35 +226,11 @@
           }
         }
       },
-      "UnityEngine.UI/1.0.0.0": {
-        "runtime": {
-          "UnityEngine.UI.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "Unity.RenderPipelines.Core.Runtime/0.0.0.0": {
-        "runtime": {
-          "Unity.RenderPipelines.Core.Runtime.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
       "UnityEngine.UIModule/0.0.0.0": {
         "runtime": {
           "UnityEngine.UIModule.dll": {
             "assemblyVersion": "0.0.0.0",
             "fileVersion": "0.0.0.0"
-          }
-        }
-      },
-      "Facepunch.Steamworks.Win64/1.0.0.0": {
-        "runtime": {
-          "Facepunch.Steamworks.Win64.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
           }
         }
       },
@@ -383,6 +386,30 @@
           }
         }
       },
+      "UnityEngine.XRModule/0.0.0.0": {
+        "runtime": {
+          "UnityEngine.XRModule.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "UnityEngine.SubsystemsModule/0.0.0.0": {
+        "runtime": {
+          "UnityEngine.SubsystemsModule.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "UnityEngine.VRModule/0.0.0.0": {
+        "runtime": {
+          "UnityEngine.VRModule.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "UnityEngine.DSPGraphModule/0.0.0.0": {
         "runtime": {
           "UnityEngine.DSPGraphModule.dll": {
@@ -519,25 +546,9 @@
           }
         }
       },
-      "UnityEngine.VRModule/0.0.0.0": {
-        "runtime": {
-          "UnityEngine.VRModule.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
       "UnityEngine.ImageConversionModule/0.0.0.0": {
         "runtime": {
           "UnityEngine.ImageConversionModule.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
-      "UnityEngine.SubsystemsModule/0.0.0.0": {
-        "runtime": {
-          "UnityEngine.SubsystemsModule.dll": {
             "assemblyVersion": "0.0.0.0",
             "fileVersion": "0.0.0.0"
           }
@@ -711,14 +722,6 @@
           }
         }
       },
-      "UnityEngine.XRModule/0.0.0.0": {
-        "runtime": {
-          "UnityEngine.XRModule.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
       "UnityEngine.ARModule/0.0.0.0": {
         "runtime": {
           "UnityEngine.ARModule.dll": {
@@ -872,6 +875,16 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Unity.RenderPipelines.Core.Runtime/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "UnityEngine.AnimationModule/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "UnityEngine.AssetBundleModule/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
@@ -892,6 +905,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "UnityEngine.PhysicsModule/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Mono.Cecil/0.10.4.0": {
       "type": "reference",
       "serviceable": false,
@@ -907,17 +925,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "UnityEngine.AnimationModule/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
     "Unity.Animation.Rigging/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "UnityEngine.PhysicsModule/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -927,7 +935,17 @@
       "serviceable": false,
       "sha512": ""
     },
+    "UnityEngine.UI/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Unity.TextMeshPro/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Facepunch.Steamworks.Win64/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -957,22 +975,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "UnityEngine.UI/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Unity.RenderPipelines.Core.Runtime/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
     "UnityEngine.UIModule/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Facepunch.Steamworks.Win64/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -1072,6 +1075,21 @@
       "serviceable": false,
       "sha512": ""
     },
+    "UnityEngine.XRModule/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "UnityEngine.SubsystemsModule/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "UnityEngine.VRModule/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "UnityEngine.DSPGraphModule/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
@@ -1157,17 +1175,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "UnityEngine.VRModule/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
     "UnityEngine.ImageConversionModule/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "UnityEngine.SubsystemsModule/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
@@ -1273,11 +1281,6 @@
       "sha512": ""
     },
     "UnityEngine.WindModule/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "UnityEngine.XRModule/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
