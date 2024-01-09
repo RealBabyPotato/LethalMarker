@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ChairMarkerModTest.Behaviours
 {
-    public class FragGrenadeScript : StunGrenadeItem
+    public class FragGrenadeScript : GrabbableObject 
     {
         
     }
