@@ -42,18 +42,18 @@ namespace ChairMarkerModTest
         private void SetupItems() // this is messy. oh well.
         {
             SetupCubeThing();
-            SetupVoodooDoll();
             SetupGrenade();
-        }
-
-        private void SetupVoodooDoll()
-        {
-            
         }
 
         private void SetupGrenade()
         {
             Item FragGrenade = bundle.LoadAsset<Item>("Assets/Mod/Frag Grenade/FragGrenade.asset");
+            // AudioSource fragAudio = bundle.LoadAsset<AudioSource>("Assets/Mod/Frag Grenade/FragGrenade.prefab");
+            AudioSource fragAudio = FragGrenade.spawnPrefab.AddComponent<AudioSource>();
+            fragAudio.clip = bundle.LoadAsset<AudioClip>("Assets/Mod/Cube Thing/fb64d9f6-7584-4a3f-930b-ba6094d37fd5.mp3");
+            fragAudio.mute = true;
+
+            Debug.Log("WORKING: " + fragAudio.mute);
 
             if (FragGrenade == null) return;
 
