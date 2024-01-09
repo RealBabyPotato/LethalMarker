@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FragGrenadeScript : GrabbableObject
 {
-    [Header(" grenade settings")]
+    [Header("Frag grenade settings")]
     public float TimeToExplode = 2.25f;
 
     public bool DestroyGrenade;
@@ -83,10 +83,10 @@ public class FragGrenadeScript : GrabbableObject
 
     private void SetControlTipForGrenade()
     {
-        string[] allLines = ((!pinPulled) ? new string[1] { "Pull pin: [RMB]" } : new string[1] { "Throw grenade: [RMB]" });
+        // string[] allLines = ((!pinPulled) ? new string[1] { "Pull pin: [RMB]" } : new string[1] { "Throw grenade: [RMB]" });
         if (base.IsOwner)
         {
-            HUDManager.Instance.ChangeControlTipMultiple(allLines, holdingItem: true, itemProperties);
+            HUDManager.Instance.ChangeControlTipMultiple(new string[] { "Throw grenade: [LMB] " }, holdingItem: true, itemProperties);
         }
     }
 
@@ -120,7 +120,7 @@ public class FragGrenadeScript : GrabbableObject
         {
             if (!DestroyGrenade)
             {
-                ExplodeStunGrenade();
+                // ExplodeStunGrenade();
                 playerHeldBy.activatingItem = false;
             }
             playerThrownBy = playerHeldBy;
@@ -142,8 +142,8 @@ public class FragGrenadeScript : GrabbableObject
             explodeTimer += Time.deltaTime;
             if (explodeTimer > TimeToExplode)
             {
-                // ExplodeStunGrenade(DestroyGrenade);
-                Debug.Log("BOOM!!");
+                ExplodeStunGrenade(DestroyGrenade);
+                Debug.Log("BOOM---------------------------------------------!!");
             }
         }
     }
@@ -157,7 +157,7 @@ public class FragGrenadeScript : GrabbableObject
             WalkieTalkie.TransmitOneShotAudio(itemAudio, explodeSFX);
             Object.Instantiate(parent: (!isInElevator) ? RoundManager.Instance.mapPropsContainer.transform : StartOfRound.Instance.elevatorTransform, original: stunGrenadeExplosion, position: base.transform.position, rotation: Quaternion.identity);
             // StunExplosion(base.transform.position, affectAudio: true, 1f, 7.5f, 1f, isHeld, playerHeldBy, playerThrownBy);
-            Landmine.SpawnExplosion(base.transform.position, true, 0.2f, 0.4f);
+            Landmine.SpawnExplosion(base.transform.position, true, 0.2f, 0.8f);
             if (DestroyGrenade)
             {
                 DestroyObjectInHand(playerThrownBy);
