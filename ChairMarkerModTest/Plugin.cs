@@ -43,11 +43,38 @@ namespace ChairMarkerModTest
         {
             SetupCubeThing();
             SetupVoodooDoll();
+            SetupGrenade();
         }
 
         private void SetupVoodooDoll()
         {
             
+        }
+
+        private void SetupGrenade()
+        {
+            Item FragGrenade = bundle.LoadAsset<Item>("Assets/Mod/Frag Grenade/FragGrenade.asset");
+            if (FragGrenade == null) return;
+
+            FragGrenade.minValue = 20;
+            FragGrenade.maxValue = 30;
+            FragGrenade.creditsWorth = 32;
+
+            FragGrenade.weight = 1.04f;
+            FragGrenade.itemId = 69698;
+            
+            FragGrenadeScript fragScript = FragGrenade.spawnPrefab.AddComponent<FragGrenadeScript>();
+            fragScript.itemProperties = FragGrenade;
+            fragScript.grabbable = true;
+            fragScript.grabbableToEnemies = true;
+
+            NetworkPrefabs.RegisterNetworkPrefab(FragGrenade.spawnPrefab);
+
+            TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();
+            node.clearPreviousText = true;
+            node.displayText = "kill your foes!\n\n";
+            Items.RegisterShopItem(FragGrenade, null, null, node, 10);
+
         }
 
         private void SetupCubeThing() // TODO: refactor this/change to weather totem, also make an asset
