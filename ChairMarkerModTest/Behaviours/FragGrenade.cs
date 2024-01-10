@@ -96,9 +96,15 @@ public class FragGrenadeScript : GrabbableObject
     {
         float magnitude = (startFallingPosition - targetFloorPosition).magnitude; // changed
         base.transform.rotation = Quaternion.Lerp(base.transform.rotation, Quaternion.Euler(itemProperties.restingRotation.x, base.transform.eulerAngles.y, itemProperties.restingRotation.z), 14f * Time.deltaTime / magnitude);
-        base.transform.localPosition = Vector3.Lerp(startFallingPosition, targetFloorPosition, 0.3f);//grenadeFallCurve.Evaluate(fallTime)); // change?
-        base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurve.Evaluate(fallTime));
-        fallTime += Mathf.Abs(Time.deltaTime * 12f / magnitude);
+        base.transform.localPosition = Vector3.Lerp(startFallingPosition, targetFloorPosition, grenadeFallCurve.Evaluate(fallTime));//grenadeFallCurve.Evaluate(fallTime)); // change?
+
+        /*if (magnitude > 5f)
+        {
+            Debug.Log("Over 5f magnitude");
+            base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurve.Evaluate(fallTime));
+        }*/
+
+        fallTime += Mathf.Abs(Time.deltaTime * 10f / magnitude);
     }
 
     private IEnumerator pullPinAnimation()

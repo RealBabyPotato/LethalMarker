@@ -52,8 +52,8 @@ namespace ChairMarkerModTest
 
             AnimationCurve gCurve = new AnimationCurve();
             gCurve.AddKey(0f, 0f);
-            gCurve.AddKey(0.502f, 0.204f);
-            gCurve.AddKey(1f, 1f);
+            gCurve.AddKey(0.502f/2, 0.204f);
+            gCurve.AddKey(0.5f, 1f);
 
             AnimationCurve gCurvVertical = new AnimationCurve();
             gCurve.AddKey(0f, 0f);
