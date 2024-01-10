@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Runtime.CompilerServices;
 using GameNetcodeStuff;
 using UnityEngine;
 
@@ -30,8 +31,6 @@ public class FragGrenadeScript : GrabbableObject
 
     public AnimationCurve grenadeVerticalFallCurve;
 
-    public AnimationCurve grenadeVerticalFallCurveNoBounce;
-
     public RaycastHit grenadeHit;
 
     public Ray grenadeThrowRay;
@@ -44,7 +43,7 @@ public class FragGrenadeScript : GrabbableObject
 
     private PlayerControllerB playerThrownBy;
 
-    public override void ItemActivate(bool used, bool buttonDown = true)
+    public override void ItemActivate(bool used, bool buttonDown = false) // buttonDown?
     {
         base.ItemActivate(used, buttonDown);
         if (inPullingPinAnimation)
@@ -53,6 +52,7 @@ public class FragGrenadeScript : GrabbableObject
         }
         if (!pinPulled && pullPinCoroutine == null)
         {
+            Debug.Log("IN !PINPULLED");
             itemAudio.PlayOneShot(pullPinSFX);
             playerHeldBy.activatingItem = true;
             pullPinCoroutine = StartCoroutine(pullPinAnimation());
@@ -94,17 +94,10 @@ public class FragGrenadeScript : GrabbableObject
 
     public override void FallWithCurve()
     {
-        float magnitude = (startFallingPosition - targetFloorPosition).magnitude * 3;
+        float magnitude = (startFallingPosition - targetFloorPosition).magnitude; // changed
         base.transform.rotation = Quaternion.Lerp(base.transform.rotation, Quaternion.Euler(itemProperties.restingRotation.x, base.transform.eulerAngles.y, itemProperties.restingRotation.z), 14f * Time.deltaTime / magnitude);
-        base.transform.localPosition = Vector3.Lerp(startFallingPosition, targetFloorPosition, grenadeFallCurve.Evaluate(fallTime));
-        if (magnitude > 5f)
-        {
-            base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurveNoBounce.Evaluate(fallTime));
-        }
-        else
-        {
-            base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurve.Evaluate(fallTime));
-        }
+        base.transform.localPosition = Vector3.Lerp(startFallingPosition, targetFloorPosition, 0.3f);//grenadeFallCurve.Evaluate(fallTime)); // change?
+        base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurve.Evaluate(fallTime));
         fallTime += Mathf.Abs(Time.deltaTime * 12f / magnitude);
     }
 
@@ -116,7 +109,7 @@ public class FragGrenadeScript : GrabbableObject
         playerHeldBy.playerBodyAnimator.SetTrigger(playerAnimation);
         itemAnimator.SetTrigger("pullPin");
         // itemAudio.PlayOneShot(pullPinSFX);
-        WalkieTalkie.TransmitOneShotAudio(itemAudio, pullPinSFX, 0.8f);
+        // WalkieTalkie.TransmitOneShotAudio(itemAudio, pullPinSFX, 0.8f);
         yield return new WaitForSeconds(1f);
         if (playerHeldBy != null)
         {
@@ -143,8 +136,8 @@ public class FragGrenadeScript : GrabbableObject
             explodeTimer += Time.deltaTime;
             if (explodeTimer > TimeToExplode)
             {
-                ExplodeFragGrenade(DestroyGrenade);
                 Debug.Log("BOOM---------------------------------------------!!");
+                ExplodeFragGrenade(DestroyGrenade);
             }
         }
     }
@@ -159,7 +152,7 @@ public class FragGrenadeScript : GrabbableObject
             Object.Instantiate(parent: (!isInElevator) ? RoundManager.Instance.mapPropsContainer.transform : StartOfRound.Instance.elevatorTransform, original: fragGrenadeExplosion, position: base.transform.position, rotation: Quaternion.identity);
             // StunExplosion(base.transform.position, affectAudio: true, 1f, 7.5f, 1f, isHeld, playerHeldBy, playerThrownBy);
             // Landmine.SpawnExplosion(base.transform.position, true, 0.2f, 0.8f);
-            FragExplosion(base.transform.position, true, 0.4f, 4f);
+            FragExplosion(base.transform.position, true, 2f, 10f);
             if (DestroyGrenade)
             {
                 DestroyObjectInHand(playerThrownBy);
@@ -167,9 +160,10 @@ public class FragGrenadeScript : GrabbableObject
         }
     } 
 
-    public static void FragExplosion(Vector3 explosionPosition, bool spawnExplosion, float killRange = 0.1f, float damageRange = 0.3f) // modified landmine explosion
+    public void FragExplosion(Vector3 explosionPosition, bool spawnExplosion, float killRange = 0.1f, float damageRange = 0.3f) // modified landmine explosion
     {
         Landmine.SpawnExplosion(explosionPosition, spawnExplosion, killRange, damageRange);
+        Destroy(gameObject);
     }
 
     public Vector3 GetGrenadeThrowDestination()

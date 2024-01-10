@@ -9,6 +9,7 @@ using System.IO;
 using System.Reflection;
 using BepInEx.Bootstrap;
 using ChairMarkerModTest.Behaviours;
+using Unity.Netcode;
 
 namespace ChairMarkerModTest
 {
@@ -48,6 +49,15 @@ namespace ChairMarkerModTest
         private void SetupGrenade()
         {
             Item FragGrenade = bundle.LoadAsset<Item>("Assets/Mod/Frag Grenade/FragGrenade.asset");
+
+            AnimationCurve gCurve = new AnimationCurve();
+            gCurve.AddKey(0f, 0f);
+            gCurve.AddKey(0.502f, 0.204f);
+            gCurve.AddKey(1f, 1f);
+
+            AnimationCurve gCurvVertical = new AnimationCurve();
+            gCurve.AddKey(0f, 0f);
+            gCurve.AddKey(1f, 1f);
             //AudioSource fragAudio = FragGrenade.spawnPrefab.AddComponent<AudioSource>();
             //fragAudio.clip = bundle.LoadAsset<AudioClip>("Assets/Mod/Cube Thing/fb64d9f6-7584-4a3f-930b-ba6094d37fd5.mp3"); // this kind of works :(
 
@@ -61,7 +71,7 @@ namespace ChairMarkerModTest
 
             FragGrenade.weight = 1.04f;
             FragGrenade.itemId = 69698;
-            
+
             FragGrenadeScript fragScript = FragGrenade.spawnPrefab.AddComponent<FragGrenadeScript>();
             fragScript.itemProperties = FragGrenade;
             fragScript.grabbable = true;
@@ -71,8 +81,10 @@ namespace ChairMarkerModTest
             fragScript.itemAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>();
             fragScript.itemAnimator = FragGrenade.spawnPrefab.GetComponent<Animator>();
             fragScript.DestroyGrenade = true;
+            fragScript.grenadeFallCurve = gCurve;
+            fragScript.grenadeVerticalFallCurve = gCurvVertical;
 
-            NetworkPrefabs.RegisterNetworkPrefab(FragGrenade.spawnPrefab);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(FragGrenade.spawnPrefab);
 
             TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();
             node.clearPreviousText = true;
@@ -97,7 +109,7 @@ namespace ChairMarkerModTest
             cubeScript.grabbable = true;
             cubeScript.grabbableToEnemies = true;
 
-            NetworkPrefabs.RegisterNetworkPrefab(CubeThing.spawnPrefab);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(CubeThing.spawnPrefab);
             
             Items.RegisterScrap(CubeThing, 1000, Levels.LevelTypes.All);
 
