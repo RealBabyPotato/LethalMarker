@@ -46,21 +46,32 @@ namespace ChairMarkerModTest
             SetupGrenade();
         }
 
+        AnimationCurve CreateGravityCurve(float duration, float gravity)
+        {
+            AnimationCurve curve = new AnimationCurve();
+
+            curve.AddKey(0f, 0f);
+
+            float currentTime = 0f;
+            float timeStep = 0.1f;
+
+            while (currentTime <= duration)
+            {
+                float velocity = gravity * currentTime;
+                curve.AddKey(currentTime, velocity);
+
+                currentTime += timeStep;
+            }
+
+            return curve;
+        }
+
         private void SetupGrenade()
         {
             Item FragGrenade = bundle.LoadAsset<Item>("Assets/Mod/Frag Grenade/FragGrenade.asset");
 
-            AnimationCurve gCurve = new AnimationCurve();
-            gCurve.AddKey(0f, 0f);
-            gCurve.AddKey(0.502f/2, 0.204f);
-            gCurve.AddKey(0.5f, 1f);
-
-            AnimationCurve gCurvVertical = new AnimationCurve();
-            gCurve.AddKey(0f, 0f);
-            gCurve.AddKey(1f, 1f);
             //AudioSource fragAudio = FragGrenade.spawnPrefab.AddComponent<AudioSource>();
             //fragAudio.clip = bundle.LoadAsset<AudioClip>("Assets/Mod/Cube Thing/fb64d9f6-7584-4a3f-930b-ba6094d37fd5.mp3"); // this kind of works :(
-
             // AudioSource fragAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>(); // omg this works!!! let's go!!!
 
             if (FragGrenade == null) return;
@@ -81,8 +92,7 @@ namespace ChairMarkerModTest
             fragScript.itemAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>();
             fragScript.itemAnimator = FragGrenade.spawnPrefab.GetComponent<Animator>();
             fragScript.DestroyGrenade = true;
-            fragScript.grenadeFallCurve = gCurve;
-            fragScript.grenadeVerticalFallCurve = gCurvVertical;
+            fragScript.grenadeFallCurve = CreateGravityCurve(1f, 9.8f);
 
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(FragGrenade.spawnPrefab);
 

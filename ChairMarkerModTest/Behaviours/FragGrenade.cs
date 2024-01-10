@@ -104,7 +104,7 @@ public class FragGrenadeScript : GrabbableObject
             base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurve.Evaluate(fallTime));
         }*/
 
-        fallTime += Mathf.Abs(Time.deltaTime * 10f / magnitude);
+        fallTime += Mathf.Abs(Time.deltaTime * 6f / magnitude);
     }
 
     private IEnumerator pullPinAnimation()
