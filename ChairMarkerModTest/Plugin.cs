@@ -67,11 +67,10 @@ namespace ChairMarkerModTest
             fragScript.grabbable = true;
             fragScript.grabbableToEnemies = true;
 
-            fragScript.stunGrenadeExplosion = FragGrenade.spawnPrefab;
+            fragScript.fragGrenadeExplosion = FragGrenade.spawnPrefab;
             fragScript.itemAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>();
-            fragScript.DestroyGrenade = false;
-
-            //fragScript.TimeToExplode = 1f;
+            fragScript.itemAnimator = FragGrenade.spawnPrefab.GetComponent<Animator>();
+            fragScript.DestroyGrenade = true;
 
             NetworkPrefabs.RegisterNetworkPrefab(FragGrenade.spawnPrefab);
 
