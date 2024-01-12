@@ -103,7 +103,7 @@ public class FragGrenadeScript : GrabbableObject
             base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurve.Evaluate(fallTime));
         }*/
 
-         fallTime += Mathf.Abs(Time.deltaTime * 10f / magnitude);
+         fallTime += Mathf.Abs(Time.deltaTime * 6f / magnitude);
 
     }
 
@@ -168,8 +168,6 @@ public class FragGrenadeScript : GrabbableObject
             itemAudio.PlayOneShot(explodeSFX);
             WalkieTalkie.TransmitOneShotAudio(itemAudio, explodeSFX);
             Object.Instantiate(parent: (!isInElevator) ? RoundManager.Instance.mapPropsContainer.transform : StartOfRound.Instance.elevatorTransform, original: fragGrenadeExplosion, position: base.transform.position, rotation: Quaternion.identity);
-            // StunExplosion(base.transform.position, affectAudio: true, 1f, 7.5f, 1f, isHeld, playerHeldBy, playerThrownBy);
-            // Landmine.SpawnExplosion(base.transform.position, true, 0.2f, 0.8f);
             FragExplosion(base.transform.position, true, 2f, 10f);
             if (DestroyGrenade)
             {
@@ -189,7 +187,7 @@ public class FragGrenadeScript : GrabbableObject
         Vector3 position = base.transform.position;
         Debug.DrawRay(playerHeldBy.gameplayCamera.transform.position, playerHeldBy.gameplayCamera.transform.forward, Color.yellow, 15f);
         grenadeThrowRay = new Ray(playerHeldBy.gameplayCamera.transform.position, playerHeldBy.gameplayCamera.transform.forward);
-        position = ((!Physics.Raycast(grenadeThrowRay, out grenadeHit, 15f, StartOfRound.Instance.collidersAndRoomMaskAndDefault)) ? grenadeThrowRay.GetPoint(10f) : grenadeThrowRay.GetPoint(grenadeHit.distance - 0.05f));
+        position = ((!Physics.Raycast(grenadeThrowRay, out grenadeHit, 12f, StartOfRound.Instance.collidersAndRoomMaskAndDefault)) ? grenadeThrowRay.GetPoint(10f) : grenadeThrowRay.GetPoint(grenadeHit.distance - 0.05f));
         Debug.DrawRay(position, Vector3.down, Color.blue, 15f);
         grenadeThrowRay = new Ray(position, Vector3.down);
         if (Physics.Raycast(grenadeThrowRay, out grenadeHit, 30f, StartOfRound.Instance.collidersAndRoomMaskAndDefault))
