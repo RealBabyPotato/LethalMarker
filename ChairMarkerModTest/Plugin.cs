@@ -93,7 +93,7 @@ namespace ChairMarkerModTest
             TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();
             node.clearPreviousText = true;
             node.displayText = "kill your foes!\n\n";
-            Items.RegisterShopItem(FragGrenade, null, null, node, 10);
+            Items.RegisterShopItem(FragGrenade, null, null, node, 0);
 
         }
 

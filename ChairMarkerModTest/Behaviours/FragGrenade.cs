@@ -106,13 +106,12 @@ public class FragGrenadeScript : GrabbableObject
         if (magnitude > 5f)
         {
             base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurveNoBounce.Evaluate(fallTime));
-            Debug.Log("magnitutde over 5f");
         } 
         else
         {
             base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurve.Evaluate(fallTime));
         }
-        fallTime += Mathf.Abs(Time.deltaTime * 2f / magnitude);
+        fallTime += Mathf.Abs(Time.deltaTime * 15f / magnitude);
     }
 
 
@@ -165,7 +164,7 @@ public class FragGrenadeScript : GrabbableObject
             itemAudio.PlayOneShot(explodeSFX);
             WalkieTalkie.TransmitOneShotAudio(itemAudio, explodeSFX);
             UnityEngine.Object.Instantiate(parent: (!isInElevator) ? RoundManager.Instance.mapPropsContainer.transform : StartOfRound.Instance.elevatorTransform, original: fragGrenadeExplosion, position: base.transform.position, rotation: Quaternion.identity);
-            FragExplosion(base.transform.position, true, 2f, 10f);
+            FragExplosion(base.transform.position, true,52f, 100f);
             if (destroy)
             {
                 DestroyObjectInHand(playerThrownBy);
@@ -173,41 +172,11 @@ public class FragGrenadeScript : GrabbableObject
         }
     } 
 
-    public void FragExplosion(Vector3 explosionPosition, bool spawnExplosion, float killRange = 0.1f, float damageRange = 0.3f) // modified landmine explosion
+    public void FragExplosion(Vector3 explosionPosition, bool spawnExplosion, float killRange, float damageRange) // modified landmine explosion
     {
         Landmine.SpawnExplosion(explosionPosition, spawnExplosion, killRange, damageRange);
-        // Destroy(gameObject);
+        Destroy(gameObject);
     }
-
-    /*public Vector3 GetGrenadeThrowDestination()
-    {
-        Vector3 position = base.transform.position;
-        Debug.DrawRay(playerHeldBy.gameplayCamera.transform.position, playerHeldBy.gameplayCamera.transform.forward, Color.yellow, 15f);
-        grenadeThrowRay = new Ray(playerHeldBy.gameplayCamera.transform.position, playerHeldBy.gameplayCamera.transform.forward);
-        position = ((!Physics.Raycast(grenadeThrowRay, out grenadeHit, 12f, StartOfRound.Instance.collidersAndRoomMaskAndDefault)) ? grenadeThrowRay.GetPoint(15f) : grenadeThrowRay.GetPoint(grenadeHit.distance - 0.05f));
-
-        try
-        {
-            Debug.Log(String.Format("GRENADEHIT INFO --- \n\nname: {0}\ncollider name: {1}\ndistance:{2}\n------", grenadeHit.collider.gameObject.name, grenadeHit.collider.name, grenadeHit.distance));
-        }
-
-        catch (Exception e)
-        {
-            Debug.Log("grenadehit info not found");
-        }
-
-        Debug.DrawRay(base.transform.position, Vector3.down, Color.blue, 15f);
-        grenadeThrowRay = new Ray(position, Vector3.down);
-        if (Physics.Raycast(grenadeThrowRay, out grenadeHit, 30f, StartOfRound.Instance.collidersAndRoomMaskAndDefault))
-        {
-            position = grenadeHit.point + Vector3.up * 0.05f;
-            base.transform.position = position;
-            return grenadeHit.point + Vector3.up * 0.05f;
-        }
-
-        base.transform.position = grenadeThrowRay.GetPoint(20f);
-        return grenadeThrowRay.GetPoint(20f);
-    }*/
 
     public Vector3 GetGrenadeThrowDestination()
     {
@@ -217,11 +186,11 @@ public class FragGrenadeScript : GrabbableObject
         position = ((!Physics.Raycast(grenadeThrowRay, out grenadeHit, 12f, StartOfRound.Instance.collidersAndRoomMaskAndDefault)) ? grenadeThrowRay.GetPoint(10f) : grenadeThrowRay.GetPoint(grenadeHit.distance - 0.05f));
         Debug.DrawRay(position, Vector3.down, Color.blue, 15f);
         grenadeThrowRay = new Ray(position, Vector3.down);
-        if (Physics.Raycast(grenadeThrowRay, out grenadeHit, 30f, StartOfRound.Instance.collidersAndRoomMaskAndDefault))
+        if (Physics.Raycast(grenadeThrowRay, out grenadeHit, 60f, StartOfRound.Instance.collidersAndRoomMaskAndDefault))
         {
             return grenadeHit.point + Vector3.up * 0.05f;
         }
-        return grenadeThrowRay.GetPoint(30f);
+        return grenadeThrowRay.GetPoint(330f);
     }
 
     protected override void __initializeVariables()
