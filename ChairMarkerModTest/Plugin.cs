@@ -80,7 +80,7 @@ namespace ChairMarkerModTest
             fragScript.fragGrenadeExplosion = FragGrenade.spawnPrefab;
             fragScript.itemAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>();
             fragScript.itemAnimator = FragGrenade.spawnPrefab.GetComponent<Animator>();
-            fragScript.DestroyGrenade = false;
+            fragScript.DestroyGrenade = true;
 
             fragScript.grenadeFallCurve = grenadeFall;
             fragScript.grenadeVerticalFallCurve = grenadeFallVert;
