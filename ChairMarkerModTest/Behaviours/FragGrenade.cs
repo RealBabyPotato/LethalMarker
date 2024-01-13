@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
 using GameNetcodeStuff;
+using Unity.Netcode;
 using UnityEngine;
 
 public class FragGrenadeScript : GrabbableObject
@@ -48,30 +49,36 @@ public class FragGrenadeScript : GrabbableObject
     public override void ItemActivate(bool used, bool buttonDown = true) // buttonDown?
     {
         base.ItemActivate(used, buttonDown);
+        
+        // HUDManager.Instance.itemSlotIcons[1].etc change slot icon with this
+
         if (inPullingPinAnimation)
         {
             return;
         }
+
         if (!pinPulled && pullPinCoroutine == null)
         {
             itemAudio.PlayOneShot(pullPinSFX);
             playerHeldBy.activatingItem = true;
             pullPinCoroutine = StartCoroutine(pullPinAnimation());
 
-            if(base.IsOwner)
-            {
-                playerHeldBy.DiscardHeldObject(placeObject: false, null, GetGrenadeThrowDestination());
-            }
         }
-        else if (base.IsOwner)
+
+        if(base.IsOwner && pinPulled && !hasExploded)
         {
-            playerHeldBy.DiscardHeldObject(placeObject: false, null, GetGrenadeThrowDestination());
+             playerHeldBy.DiscardHeldObject(placeObject: false, null, GetGrenadeThrowDestination());
+        }
+
+        if (pinPulled && !hasExploded)
+        {
+            ExplodeFragGrenade();
         }
     }
 
     public override void DiscardItem()
     {
-        if (playerHeldBy != null)
+        if (playerHeldBy != null && !pinPulled)
         {
             playerHeldBy.activatingItem = false;
         }
@@ -85,6 +92,7 @@ public class FragGrenadeScript : GrabbableObject
         isPocketed = false;
     }
 
+    
     private void SetControlTipForGrenade()
     {
         if (base.IsOwner)
@@ -138,7 +146,7 @@ public class FragGrenadeScript : GrabbableObject
         }
     }
 
-    public override void Update()
+    /*public override void Update()
     {
         base.Update();
         if (pinPulled && !hasExploded)
@@ -147,10 +155,11 @@ public class FragGrenadeScript : GrabbableObject
             if (explodeTimer > TimeToExplode)
             {
                 Debug.Log("BOOM---------------------------------------------!!");
-                ExplodeFragGrenade(DestroyGrenade);
+                // ExplodeFragGrenade(DestroyGrenade);
+                
             }
         }
-    }
+    }*/
 
     private void ExplodeFragGrenade(bool destroy = false)
     {
@@ -161,7 +170,7 @@ public class FragGrenadeScript : GrabbableObject
             WalkieTalkie.TransmitOneShotAudio(itemAudio, explodeSFX);
             Object.Instantiate(parent: (!isInElevator) ? RoundManager.Instance.mapPropsContainer.transform : StartOfRound.Instance.elevatorTransform, original: fragGrenadeExplosion, position: base.transform.position, rotation: Quaternion.identity);
             FragExplosion(base.transform.position, true, 2f, 10f);
-            if (DestroyGrenade)
+            if (destroy)
             {
                 DestroyObjectInHand(playerThrownBy);
             }

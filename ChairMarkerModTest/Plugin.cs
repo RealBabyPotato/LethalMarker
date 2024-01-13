@@ -67,10 +67,6 @@ namespace ChairMarkerModTest
 
             if (FragGrenade == null) return;
 
-            FragGrenade.minValue = 20;
-            FragGrenade.maxValue = 30;
-            FragGrenade.creditsWorth = 32;
-
             FragGrenade.weight = 1.04f;
             FragGrenade.itemId = 69698;
 
@@ -84,7 +80,7 @@ namespace ChairMarkerModTest
             fragScript.fragGrenadeExplosion = FragGrenade.spawnPrefab;
             fragScript.itemAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>();
             fragScript.itemAnimator = FragGrenade.spawnPrefab.GetComponent<Animator>();
-            fragScript.DestroyGrenade = true;
+            fragScript.DestroyGrenade = false;
 
             fragScript.grenadeFallCurve = grenadeFall;
             fragScript.grenadeVerticalFallCurve = grenadeFallVert;
