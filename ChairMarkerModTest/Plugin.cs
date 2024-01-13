@@ -52,13 +52,18 @@ namespace ChairMarkerModTest
             Item FragGrenade = bundle.LoadAsset<Item>("Assets/Mod/Frag Grenade/FragGrenade.asset");
 
             AnimationCurve grenadeFall = new AnimationCurve();
-            grenadeFall.AddKey(0.502f / 2, 0.204f);
-            grenadeFall.AddKey(0.5f, 1f);
+            grenadeFall.AddKey(0f, 0f);
+            // grenadeFall.AddKey(0.502f / 2, 0.204f);
+            grenadeFall.AddKey(1f, 1f);
+
+            AnimationCurve grenadeFallVert = new AnimationCurve();
+            grenadeFallVert.AddKey(0f, 0f);
+            grenadeFallVert.AddKey(0.502f, 0.204f);
+            grenadeFallVert.AddKey(1f, 1f);
 
 
-            // AudioSource fragAudio = FragGrenade.spawnPrefab.AddComponent<AudioSource>();
-            // fragAudio.clip = bundle.LoadAsset<AudioClip>("Assets/Mod/Cube Thing/fb64d9f6-7584-4a3f-930b-ba6094d37fd5.mp3"); // this kind of works :(
-            // AudioSource fragAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>(); // omg this works!!! let's go!!!
+            AudioSource fragAudio = FragGrenade.spawnPrefab.AddComponent<AudioSource>();
+            fragAudio.clip = bundle.LoadAsset<AudioClip>("Assets/Mod/Cube Thing/fb64d9f6-7584-4a3f-930b-ba6094d37fd5.mp3"); // this kind of works :(
 
             if (FragGrenade == null) return;
 
@@ -73,13 +78,19 @@ namespace ChairMarkerModTest
             fragScript.itemProperties = FragGrenade;
             fragScript.grabbable = true;
             fragScript.grabbableToEnemies = true;
+            
+            // AudioSource fragAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>(); // omg this works!!! let's go!!!
 
             fragScript.fragGrenadeExplosion = FragGrenade.spawnPrefab;
             fragScript.itemAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>();
             fragScript.itemAnimator = FragGrenade.spawnPrefab.GetComponent<Animator>();
             fragScript.DestroyGrenade = true;
+
             fragScript.grenadeFallCurve = grenadeFall;
-            fragScript.grenadeVerticalFallCurve = grenadeFall;
+            fragScript.grenadeVerticalFallCurve = grenadeFallVert;
+            fragScript.grenadeVerticalFallCurveNoBounce = grenadeFallVert;
+
+
 
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(FragGrenade.spawnPrefab);
 

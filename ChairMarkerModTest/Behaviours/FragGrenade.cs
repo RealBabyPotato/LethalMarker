@@ -31,6 +31,8 @@ public class FragGrenadeScript : GrabbableObject
 
     public AnimationCurve grenadeVerticalFallCurve;
 
+    public AnimationCurve grenadeVerticalFallCurveNoBounce;
+
     public RaycastHit grenadeHit;
 
     public Ray grenadeThrowRay;
@@ -93,19 +95,21 @@ public class FragGrenadeScript : GrabbableObject
 
     public override void FallWithCurve()
     {
-        float magnitude = (startFallingPosition - targetFloorPosition).magnitude; // changed
-         base.transform.rotation = Quaternion.Lerp(base.transform.rotation, Quaternion.Euler(itemProperties.restingRotation.x, base.transform.eulerAngles.y, itemProperties.restingRotation.z), 14f * Time.deltaTime / magnitude);
-         base.transform.localPosition = Vector3.Lerp(startFallingPosition, targetFloorPosition, grenadeFallCurve.Evaluate(fallTime));//grenadeFallCurve.Evaluate(fallTime)); // change?
-
-        /*if (magnitude > 5f)
+        float magnitude = (startFallingPosition - targetFloorPosition).magnitude;
+        base.transform.rotation = Quaternion.Lerp(base.transform.rotation, Quaternion.Euler(itemProperties.restingRotation.x, base.transform.eulerAngles.y, itemProperties.restingRotation.z), 14f * Time.deltaTime / magnitude);
+        base.transform.localPosition = Vector3.Lerp(startFallingPosition, targetFloorPosition, grenadeFallCurve.Evaluate(fallTime));
+        if (magnitude > 5f)
         {
-            Debug.Log("Over 5f magnitude");
+            base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurveNoBounce.Evaluate(fallTime));
+            Debug.Log("magnitutde over 5f");
+        }
+        else
+        {
             base.transform.localPosition = Vector3.Lerp(new Vector3(base.transform.localPosition.x, startFallingPosition.y, base.transform.localPosition.z), new Vector3(base.transform.localPosition.x, targetFloorPosition.y, base.transform.localPosition.z), grenadeVerticalFallCurve.Evaluate(fallTime));
-        }*/
-
-         fallTime += Mathf.Abs(Time.deltaTime * 6f / magnitude);
-
+        }
+        fallTime += Mathf.Abs(Time.deltaTime * 12f / magnitude);
     }
+
 
     private IEnumerator pullPinAnimation()
     {
@@ -132,18 +136,6 @@ public class FragGrenadeScript : GrabbableObject
         {
             SetControlTipForGrenade();
         }
-    }
-
-    public override void GrabItem()
-    {
-        base.GrabItem();
-        Debug.Log("grab item");
-    }
-
-    public override void InteractItem()
-    {
-        base.InteractItem();
-        Debug.Log("interact item");
     }
 
     public override void Update()
