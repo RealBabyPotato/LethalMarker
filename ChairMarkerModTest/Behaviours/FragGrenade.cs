@@ -45,6 +45,8 @@ public class FragGrenadeScript : GrabbableObject
 
     public GameObject fragGrenadeExplosion;
 
+    public GameObject trajectoryIndicator;
+
     private PlayerControllerB playerThrownBy;
 
     public override void ItemActivate(bool used, bool buttonDown = true) // buttonDown?
@@ -65,11 +67,6 @@ public class FragGrenadeScript : GrabbableObject
             pullPinCoroutine = StartCoroutine(pullPinAnimation());
 
         }
-
-        /*if(base.IsOwner)
-        {
-             playerHeldBy.DiscardHeldObject(placeObject: false, null, GetGrenadeThrowDestination());
-        }*/
 
     }
 
@@ -136,6 +133,7 @@ public class FragGrenadeScript : GrabbableObject
         inPullingPinAnimation = false;
         pinPulled = true;
         itemUsedUp = true;
+
         if (base.IsOwner && playerHeldBy != null)
         {
             playerHeldBy.DiscardHeldObject(placeObject: true, null, GetGrenadeThrowDestination());
@@ -145,13 +143,23 @@ public class FragGrenadeScript : GrabbableObject
     public override void Update()
     {
         base.Update();
+
+        if (isHeld && playerHeldBy != null)
+        {
+            trajectoryIndicator.transform.position = GetGrenadeThrowDestination();
+            trajectoryIndicator.SetActive(true);
+        }
+        else
+        {
+            trajectoryIndicator.SetActive(false);
+        }
+
         if (pinPulled && !hasExploded)
         {
             explodeTimer += Time.deltaTime;
             if (explodeTimer > TimeToExplode)
             {
                 ExplodeFragGrenade(DestroyGrenade);
-                
             }
         }
     }

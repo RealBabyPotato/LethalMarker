@@ -74,7 +74,8 @@ namespace ChairMarkerModTest
             fragScript.itemProperties = FragGrenade;
             fragScript.grabbable = true;
             fragScript.grabbableToEnemies = true;
-            
+
+            fragScript.trajectoryIndicator = FragGrenade.spawnPrefab.transform.GetChild(2).gameObject;
             // AudioSource fragAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>(); // omg this works!!! let's go!!!
 
             fragScript.fragGrenadeExplosion = FragGrenade.spawnPrefab;
