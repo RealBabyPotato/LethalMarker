@@ -50,6 +50,7 @@ namespace ChairMarkerModTest
         private void SetupGrenade()
         {
             Item FragGrenade = bundle.LoadAsset<Item>("Assets/Mod/Frag Grenade/FragGrenade.asset");
+            FragGrenade.spawnPrefab.transform.GetChild(2).gameObject.SetActive(false); 
 
             AnimationCurve grenadeFall = new AnimationCurve();
             grenadeFall.AddKey(0f, 0f);
@@ -75,7 +76,7 @@ namespace ChairMarkerModTest
             fragScript.grabbable = true;
             fragScript.grabbableToEnemies = true;
 
-            fragScript.trajectoryIndicator = FragGrenade.spawnPrefab.transform.GetChild(2).gameObject;
+            fragScript.trajectoryIndicator = FragGrenade.spawnPrefab.transform.GetChild(3).gameObject;
             // AudioSource fragAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>(); // omg this works!!! let's go!!!
 
             fragScript.fragGrenadeExplosion = FragGrenade.spawnPrefab;
