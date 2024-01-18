@@ -41,7 +41,7 @@ namespace ChairMarkerModTest
             Logger.LogInfo("CMOD Loaded!");
         }
 
-        private void SetupItems() // this is messy. oh well.
+        private void SetupItems()
         {
             SetupCubeThing();
             SetupGrenade();
@@ -50,11 +50,9 @@ namespace ChairMarkerModTest
         private void SetupGrenade()
         {
             Item FragGrenade = bundle.LoadAsset<Item>("Assets/Mod/Frag Grenade/FragGrenade.asset");
-            FragGrenade.spawnPrefab.transform.GetChild(2).gameObject.SetActive(false); 
 
             AnimationCurve grenadeFall = new AnimationCurve();
             grenadeFall.AddKey(0f, 0f);
-            // grenadeFall.AddKey(0.502f / 2, 0.204f);
             grenadeFall.AddKey(1f, 1f);
 
             AnimationCurve grenadeFallVert = new AnimationCurve();
@@ -76,7 +74,7 @@ namespace ChairMarkerModTest
             fragScript.grabbable = true;
             fragScript.grabbableToEnemies = true;
 
-            fragScript.trajectoryIndicator = FragGrenade.spawnPrefab.transform.GetChild(3).gameObject;
+            fragScript.trajectoryIndicator = FragGrenade.spawnPrefab.transform.GetChild(2).gameObject;
             // AudioSource fragAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>(); // omg this works!!! let's go!!!
 
             fragScript.fragGrenadeExplosion = FragGrenade.spawnPrefab;
