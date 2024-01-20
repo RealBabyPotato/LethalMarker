@@ -11,6 +11,7 @@ using BepInEx.Bootstrap;
 using ChairMarkerModTest.Behaviours;
 using Unity.Netcode;
 using System.Security.Cryptography;
+using GameNetcodeStuff;
 
 namespace ChairMarkerModTest
 {
@@ -24,6 +25,7 @@ namespace ChairMarkerModTest
         const string VERSION = "0.0.1";
 
         public static Plugin instance;
+        internal ManualLogSource mls;
 
         AssetBundle bundle;
         
@@ -37,14 +39,16 @@ namespace ChairMarkerModTest
 
             SetupItems();
 
+            mls = BepInEx.Logging.Logger.CreateLogSource(GUID);
+            mls.LogInfo("Chair Marker mod up and running!");
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
-            Logger.LogInfo("CMOD Loaded!");
         }
 
         private void SetupItems()
         {
             SetupCubeThing();
             SetupGrenade();
+            SetupExtendoArm();
         }
 
         private void SetupGrenade()
@@ -95,6 +99,18 @@ namespace ChairMarkerModTest
             node.displayText = "kill your foes!\n\n";
             Items.RegisterShopItem(FragGrenade, null, null, node, 0);
 
+        }
+
+        private void SetupExtendoArm()
+        {
+            Item ExtendoArm = bundle.LoadAsset<Item>("Assets/Mod/Extendo Arm/Extendo Arm.asset");
+
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ExtendoArm.spawnPrefab);
+
+            TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();
+            node.clearPreviousText = true;
+            node.displayText = "Useful for siphoning loot!";
+            Items.RegisterShopItem(ExtendoArm, null, null, node, 0);
         }
 
         private void SetupCubeThing() // TODO: refactor this/change to weather totem, also make an asset
