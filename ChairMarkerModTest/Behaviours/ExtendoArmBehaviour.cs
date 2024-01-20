@@ -11,20 +11,32 @@ namespace ChairMarkerModTest.Behaviours
         public GameObject piston;
         public bool isShooting;
 
-        private Coroutine shootPistonCoroutine;
-
         public override void ItemActivate(bool used, bool buttonDown = false)
         {
             base.ItemActivate(used, buttonDown);
 
-            if (!isShooting && shootPistonCoroutine == null)
+            if (!isShooting)
             {
-                shootPistonCoroutine = StartCoroutine(shootPiston());
-            } else
+                StartCoroutine(shootPiston());
+            } 
+
+        }
+
+        private GrabbableObject firstItem()
+        {
+            Collider[] colls = Physics.OverlapBox(piston.transform.position, transform.localScale / 2f, Quaternion.identity); // change to actual hitbox at the end of piston thing
+
+            foreach(Collider coll in colls)
             {
-                Debug.Log("Can't shoot! isShooting: " + isShooting + " shootPistonCoroutine: " + shootPistonCoroutine);
+                GrabbableObject grabbableObject = coll.gameObject.GetComponent<GrabbableObject>();
+
+                if (grabbableObject != null)
+                {
+                    return grabbableObject;
+                }
             }
 
+            return null;
         }
 
         private IEnumerator shootPiston()
@@ -33,7 +45,7 @@ namespace ChairMarkerModTest.Behaviours
             float origY = piston.transform.localPosition.y;
             isShooting = true;
             // extend
-            for(float yOffset = 0; yOffset < 1.5f; yOffset += 0.01f)
+            for(float yOffset = 0; yOffset < 1.5f; yOffset += 0.05f)
             {
                 Debug.Log(yOffset);
                 piston.transform.localPosition = new Vector3(piston.transform.localPosition.x, yOffset + origY, piston.transform.localPosition.z);
@@ -42,7 +54,7 @@ namespace ChairMarkerModTest.Behaviours
 
 
             // retract
-            for(float yOffset = 1.5f; yOffset > 0f; yOffset -= 0.01f)
+            for(float yOffset = 1.5f; yOffset > 0f; yOffset -= 0.05f)
             {
                 piston.transform.localPosition = new Vector3(piston.transform.localPosition.x, yOffset + origY, piston.transform.localPosition.z);
                 Debug.Log(yOffset);

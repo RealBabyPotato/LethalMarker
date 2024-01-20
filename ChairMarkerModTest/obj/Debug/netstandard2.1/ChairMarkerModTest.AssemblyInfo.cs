@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ChairMarkerModTest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a1958692aa37c3689bf4e7406be8283c39e045e0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a1a865aa6e50d572e829aef64da94906b5c06ea1")]
 [assembly: System.Reflection.AssemblyProductAttribute("ChairMarkerModTest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ChairMarkerModTest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
