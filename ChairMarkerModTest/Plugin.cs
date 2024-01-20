@@ -105,6 +105,17 @@ namespace ChairMarkerModTest
         {
             Item ExtendoArm = bundle.LoadAsset<Item>("Assets/Mod/Extendo Arm/Extendo Arm.asset");
 
+            ExtendoArm.weight = 1.13f;
+            ExtendoArm.itemId = 69699;
+            ExtendoArm.canBeGrabbedBeforeGameStart = true;
+            ExtendoArm.itemSpawnsOnGround = false;
+
+            ExtendoArmBehaviour script = ExtendoArm.spawnPrefab.AddComponent<ExtendoArmBehaviour>();
+            script.itemProperties = ExtendoArm;
+            script.grabbable = true;
+            script.grabbableToEnemies = true;
+            script.piston = ExtendoArm.spawnPrefab.transform.GetChild(2).gameObject;
+            
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ExtendoArm.spawnPrefab);
 
             TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();
