@@ -114,7 +114,10 @@ namespace ChairMarkerModTest
             script.itemProperties = ExtendoArm;
             script.grabbable = true;
             script.grabbableToEnemies = true;
+
             script.piston = ExtendoArm.spawnPrefab.transform.GetChild(2).gameObject;
+            script.pistonBlock = ExtendoArm.spawnPrefab.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject;
+            Debug.Log(script.pistonBlock.name);
             
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ExtendoArm.spawnPrefab);
 
