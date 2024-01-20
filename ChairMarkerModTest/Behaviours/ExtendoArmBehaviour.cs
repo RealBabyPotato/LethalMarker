@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 namespace ChairMarkerModTest.Behaviours
 {
@@ -16,61 +17,49 @@ namespace ChairMarkerModTest.Behaviours
         public bool isShooting;
 
         private Vector3 origPos;
+        private int[] ignoreLayers = { 0, 18, 3};
 
         public override void ItemActivate(bool used, bool buttonDown = false)
         {
             base.ItemActivate(used, buttonDown);
 
-            if (!isShooting && shootCoroutine == null)
+            //if (!isShooting && shootCoroutine == null)
+            if(!isShooting)
             {
-                shootCoroutine = StartCoroutine(shootPiston());
-                // StartCoroutine(shootPiston());
+                // shootCoroutine = StartCoroutine(shootPiston());
+                StartCoroutine(shootPiston());
             } 
 
         }
 
-        private GameObject firstItem()
+        private GameObject? firstItem()
         {
-            Collider[] colls = Physics.OverlapBox(pistonBlock.transform.position, pistonBlock.transform.localScale / 2f, Quaternion.identity); // change to actual hitbox at the end of piston thing
+            Collider[] colls = Physics.OverlapBox(pistonBlock.transform.position, pistonBlock.transform.localScale / 2f, Quaternion.identity); 
+            Debug.Log(colls.Length);
 
             foreach(Collider coll in colls)
             {
-                Debug.Log("LAYER + " + coll.gameObject.layer);
-                /*if(coll.gameObject.layer == LayerMask.NameToLayer("Colliders"){
-                    return ;
-                }*/
-
-                return coll.gameObject;
-
-                GrabbableObject grabbableObject = coll.gameObject.GetComponent<GrabbableObject>();
-
-                if (grabbableObject != null)
+                if(coll.gameObject != null)
                 {
-                    return grabbableObject.gameObject;
+                    Debug.Log("layer " + coll.gameObject.layer);
+                    GrabbableObject grabbableObject = coll.gameObject.GetComponent<GrabbableObject>();
+
+                    if (grabbableObject != null)
+                    {
+                        return grabbableObject.gameObject;
+                    }
+                    
+                    else if (ignoreLayers.Contains(coll.gameObject.layer))
+                    {
+                        continue;
+                    }
+
+                    // return new GameObject();
+                    break;
                 }
-
-
             }
 
             return null;
-        }
-
-        public override void Update()
-        {
-            base.Update();
-            while (isShooting)
-            {
-                GameObject returnedItem = firstItem();
-                if(returnedItem != null)
-                {
-                    StopCoroutine(shootCoroutine);
-                    shootCoroutine = null;
-                    isShooting = false;
-                    piston.transform.localPosition = origPos != null ? origPos : new Vector3(0, 0.5f, 0);
-                    break;
-                    
-                }
-            }
         }
 
         private IEnumerator shootPiston()
@@ -82,6 +71,27 @@ namespace ChairMarkerModTest.Behaviours
             for(float yOffset = 0; yOffset < 1.5f; yOffset += 0.05f)
             {
                 piston.transform.localPosition = new Vector3(piston.transform.localPosition.x, yOffset + origY, piston.transform.localPosition.z);
+
+                GameObject? returnedItem = firstItem();
+                if(returnedItem != null)
+                {
+                    isShooting = false;
+
+                    /*for(float y = yOffset; y > 0f; yOffset -= 0.3f)
+                    {
+                        piston.transform.localPosition = new Vector3(piston.transform.localPosition.x, yOffset + y, piston.transform.localPosition.z);
+                    }*/
+                    piston.transform.localPosition = origPos;
+
+                    GrabbableObject obj = returnedItem.gameObject.GetComponent<GrabbableObject>();
+                    if(obj != null)
+                    {
+                        obj.transform.position = origPos;
+                        obj.FallToGround();
+                    }
+
+                    yield break;
+                }
 
                 yield return null;
             }
