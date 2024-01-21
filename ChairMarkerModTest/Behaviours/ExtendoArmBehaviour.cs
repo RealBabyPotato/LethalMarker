@@ -11,37 +11,56 @@ namespace ChairMarkerModTest.Behaviours
     {
         public GameObject pistonBlock;
         public GameObject piston;
-
-        private Coroutine? shootCoroutine;
+        public GameObject stopFlag; // remove this later? this was mostly for testing purposes.
 
         public bool isShooting;
+        private bool isHoldingButton;
 
         private Vector3 origPos;
-        private int[] ignoreLayers = { 0, 18, 3};
+        private int[] ignoreLayers = { 0, 18, 3, 13, 29, 9, 22 };
 
-        public override void ItemActivate(bool used, bool buttonDown = false)
+        public override void ItemActivate(bool used, bool buttonDown = true)
         {
             base.ItemActivate(used, buttonDown);
+            float chargeTime = 0f;
 
-            //if (!isShooting && shootCoroutine == null)
+            Debug.Log(buttonDown);
+            // isHoldingButton = buttonDown;
+
+            // StartCoroutine(handleHoldButton());
+
+            /*while (buttonDown && !isShooting)
+            {
+                chargeTime += 0.01f;
+                Debug.Log("charging: " + chargeTime);
+                
+                if(chargeTime > 3f)
+                {
+                    break;
+                }
+            }*/
+
+            if (base.IsOwner)
+            {
+                playerHeldBy.activatingItem = buttonDown;
+            }
+
             if(!isShooting)
             {
-                // shootCoroutine = StartCoroutine(shootPiston());
-                StartCoroutine(shootPiston());
+                StartCoroutine(shootPiston(chargeTime));
             } 
 
         }
 
         private GameObject? firstItem()
         {
+            bool flag = false;
             Collider[] colls = Physics.OverlapBox(pistonBlock.transform.position, pistonBlock.transform.localScale / 2f, Quaternion.identity); 
-            Debug.Log(colls.Length);
 
             foreach(Collider coll in colls)
             {
                 if(coll.gameObject != null)
                 {
-                    Debug.Log("layer " + coll.gameObject.layer);
                     GrabbableObject grabbableObject = coll.gameObject.GetComponent<GrabbableObject>();
 
                     if (grabbableObject != null)
@@ -54,43 +73,53 @@ namespace ChairMarkerModTest.Behaviours
                         continue;
                     }
 
-                    // return new GameObject();
+                    Debug.Log("layer " + coll.gameObject.layer);
+                    flag = true;
                     break;
                 }
             }
 
-            return null;
+            return flag ? stopFlag : null;
         }
 
-        private IEnumerator shootPiston()
+        private IEnumerator handleHoldButton()
+        {
+            // float chargeTime = 0f;
+            yield return new WaitUntil(() => !isHoldingButton);
+            Debug.Log("stopped");
+        }
+
+        private IEnumerator shootPiston(float chargeTime) // charge up to increase range
         {
             origPos = piston.transform.localPosition;
             float origY = piston.transform.localPosition.y;
             isShooting = true;
+
+            float yThreshhold = 1.5f + chargeTime;
+
             // extend
-            for(float yOffset = 0; yOffset < 1.5f; yOffset += 0.05f)
+            for(float yOffset = 0; yOffset < yThreshhold; yOffset += 0.05f + (chargeTime / 100))
             {
                 piston.transform.localPosition = new Vector3(piston.transform.localPosition.x, yOffset + origY, piston.transform.localPosition.z);
 
-                GameObject? returnedItem = firstItem();
-                if(returnedItem != null)
+                if(yOffset > 0.5f)
                 {
-                    isShooting = false;
-
-                    /*for(float y = yOffset; y > 0f; yOffset -= 0.3f)
+                    GameObject? returnedItem = firstItem();
+                    if(returnedItem != null)
                     {
-                        piston.transform.localPosition = new Vector3(piston.transform.localPosition.x, yOffset + y, piston.transform.localPosition.z);
-                    }*/
-                    piston.transform.localPosition = origPos;
+                        isShooting = false;
 
-                    GrabbableObject obj = returnedItem.gameObject.GetComponent<GrabbableObject>();
-                    if(obj != null)
-                    {
-                        obj.transform.position = origPos;
-                        obj.FallToGround();
-                    }
+                        piston.transform.localPosition = origPos;
 
-                    yield break;
+                        GrabbableObject obj = returnedItem.gameObject.GetComponent<GrabbableObject>();
+                        if(obj != null)
+                        {
+                            obj.transform.position = origPos;
+                            obj.FallToGround();
+                        }
+
+                        yield break;
+                    } 
                 }
 
                 yield return null;
@@ -98,7 +127,7 @@ namespace ChairMarkerModTest.Behaviours
 
 
             // retract
-            for(float yOffset = 1.5f; yOffset > 0f; yOffset -= 0.05f)
+            for(float yOffset = yThreshhold; yOffset > 0f; yOffset -= 0.05f + (chargeTime / 25))
             {
                 piston.transform.localPosition = new Vector3(piston.transform.localPosition.x, yOffset + origY, piston.transform.localPosition.z);
                 yield return null;

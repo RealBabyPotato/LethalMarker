@@ -117,6 +117,7 @@ namespace ChairMarkerModTest
 
             script.piston = ExtendoArm.spawnPrefab.transform.GetChild(2).gameObject;
             script.pistonBlock = ExtendoArm.spawnPrefab.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject;
+            script.stopFlag = ExtendoArm.spawnPrefab.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject;
             
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ExtendoArm.spawnPrefab);
 
