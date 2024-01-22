@@ -25,31 +25,25 @@ namespace ChairMarkerModTest.Behaviours
             float chargeTime = 0f;
 
             Debug.Log(buttonDown);
-            // isHoldingButton = buttonDown;
+            isHoldingButton = buttonDown;
 
-            // StartCoroutine(handleHoldButton());
 
-            /*while (buttonDown && !isShooting)
-            {
-                chargeTime += 0.01f;
-                Debug.Log("charging: " + chargeTime);
-                
-                if(chargeTime > 3f)
-                {
-                    break;
-                }
-            }*/
-
-            if (base.IsOwner)
+            /*if (base.IsOwner)
             {
                 playerHeldBy.activatingItem = buttonDown;
-            }
+            }*/
 
             if(!isShooting)
             {
                 StartCoroutine(shootPiston(chargeTime));
             } 
 
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            Debug.Log(isHoldingButton);
         }
 
         private GameObject? firstItem()
