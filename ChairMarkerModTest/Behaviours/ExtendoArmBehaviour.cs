@@ -14,10 +14,9 @@ namespace ChairMarkerModTest.Behaviours
         public GameObject stopFlag; // remove this later? this was mostly for testing purposes.
 
         public bool isShooting;
-        private bool isHoldingButton;
 
         private Vector3 origPos;
-        private int[] ignoreLayers = { 0, 18, 3, 13, 29, 9, 22 };
+        private int[] ignoreLayers = { 0, 18, 3, 13, 29, 9, 22, 2};
 
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
@@ -25,13 +24,6 @@ namespace ChairMarkerModTest.Behaviours
             float chargeTime = 0f;
 
             Debug.Log(buttonDown);
-            isHoldingButton = buttonDown;
-
-
-            /*if (base.IsOwner)
-            {
-                playerHeldBy.activatingItem = buttonDown;
-            }*/
 
             if(!isShooting)
             {
@@ -43,13 +35,12 @@ namespace ChairMarkerModTest.Behaviours
         public override void Update()
         {
             base.Update();
-            Debug.Log(isHoldingButton);
         }
 
         private GameObject? firstItem()
         {
             bool flag = false;
-            Collider[] colls = Physics.OverlapBox(pistonBlock.transform.position, pistonBlock.transform.localScale / 2f, Quaternion.identity); 
+            Collider[] colls = Physics.OverlapBox(pistonBlock.transform.position, pistonBlock.transform.localScale / 10f, Quaternion.identity); 
 
             foreach(Collider coll in colls)
             {
@@ -76,13 +67,6 @@ namespace ChairMarkerModTest.Behaviours
             return flag ? stopFlag : null;
         }
 
-        private IEnumerator handleHoldButton()
-        {
-            // float chargeTime = 0f;
-            yield return new WaitUntil(() => !isHoldingButton);
-            Debug.Log("stopped");
-        }
-
         private IEnumerator shootPiston(float chargeTime) // charge up to increase range
         {
             origPos = piston.transform.localPosition;
@@ -96,7 +80,7 @@ namespace ChairMarkerModTest.Behaviours
             {
                 piston.transform.localPosition = new Vector3(piston.transform.localPosition.x, yOffset + origY, piston.transform.localPosition.z);
 
-                if(yOffset > 0.5f)
+                if(yOffset > 0.0f) // change
                 {
                     GameObject? returnedItem = firstItem();
                     if(returnedItem != null)
