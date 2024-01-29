@@ -118,6 +118,18 @@ namespace ChairMarkerModTest
             script.piston = ExtendoArm.spawnPrefab.transform.GetChild(2).gameObject;
             script.pistonBlock = ExtendoArm.spawnPrefab.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject;
             script.stopFlag = ExtendoArm.spawnPrefab.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject;
+
+            script.armAudio = ExtendoArm.spawnPrefab.GetComponent<AudioSource>();
+
+            script.instantRetract = bundle.LoadAsset<AudioClip>("Assets/Mod/Extendo Arm/Audio/default.wav");
+            script.retract1 = bundle.LoadAsset<AudioClip>("Assets/Mod/Extendo Arm/Audio/fastestin.wav"); // fast
+            script.retract2 = bundle.LoadAsset<AudioClip>("Assets/Mod/Extendo Arm/Audio/fastin.wav"); // fast
+            script.retract3 = bundle.LoadAsset<AudioClip>("Assets/Mod/Extendo Arm/Audio/slowin.wav");
+
+            script.extend1 = bundle.LoadAsset<AudioClip>("Assets/Mod/Extendo Arm/Audio/longout.wav");
+            script.extend2 = bundle.LoadAsset<AudioClip>("Assets/Mod/Extendo Arm/Audio/out.wav");
+            script.outIn = bundle.LoadAsset<AudioClip>("Assets/Mod/Extendo Arm/Audio/outin.wav");
+
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ExtendoArm.spawnPrefab);
 
             TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();

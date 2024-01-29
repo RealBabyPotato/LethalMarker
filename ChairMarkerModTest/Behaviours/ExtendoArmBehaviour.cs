@@ -18,12 +18,24 @@ namespace ChairMarkerModTest.Behaviours
         private Vector3 origPos;
         private int[] ignoreLayers = { 0, 18, 3, 13, 29, 9, 22, 2};
 
+        public AudioSource armAudio;
+
+        public AudioClip retract1;
+        public AudioClip retract2;
+        public AudioClip retract3;
+
+        public AudioClip instantRetract;
+        public AudioClip outIn;
+
+        public AudioClip extend1;
+        public AudioClip extend2;
+
+
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
             base.ItemActivate(used, buttonDown);
             float chargeTime = 0f;
 
-            Debug.Log(buttonDown);
 
             if(!isShooting)
             {
@@ -73,6 +85,10 @@ namespace ChairMarkerModTest.Behaviours
             float origY = piston.transform.localPosition.y;
             isShooting = true;
 
+            AudioClip[] extendAudios = { extend1, extend2 };
+            armAudio.clip = extendAudios[UnityEngine.Random.Range(0, extendAudios.Length - 1)];
+            armAudio.Play();
+
             float yThreshhold = 1.5f + chargeTime;
 
             // extend
@@ -86,6 +102,9 @@ namespace ChairMarkerModTest.Behaviours
                     if(returnedItem != null)
                     {
                         isShooting = false;
+
+                        armAudio.clip = instantRetract;
+                        armAudio.Play();
 
                         piston.transform.localPosition = origPos;
 
@@ -103,6 +122,9 @@ namespace ChairMarkerModTest.Behaviours
                 yield return null;
             }
 
+            AudioClip[] retractAudios = { retract1, retract2, retract3 };
+            armAudio.clip = retractAudios[UnityEngine.Random.Range(0, retractAudios.Length - 1)];
+            armAudio.Play();
 
             // retract
             for(float yOffset = yThreshhold; yOffset > 0f; yOffset -= 0.05f + (chargeTime / 25))
@@ -110,6 +132,8 @@ namespace ChairMarkerModTest.Behaviours
                 piston.transform.localPosition = new Vector3(piston.transform.localPosition.x, yOffset + origY, piston.transform.localPosition.z);
                 yield return null;
             }
+
+            armAudio.PlayOneShot(instantRetract);
 
             piston.transform.localPosition = origPos;
             isShooting = false;
