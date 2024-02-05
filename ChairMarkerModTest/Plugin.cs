@@ -55,50 +55,11 @@ namespace ChairMarkerModTest
         {
             Item FragGrenade = bundle.LoadAsset<Item>("Assets/Mod/Frag Grenade/FragGrenade.asset");
 
-            AnimationCurve grenadeFall = new AnimationCurve();
-            grenadeFall.AddKey(0f, 0f);
-            grenadeFall.AddKey(1f, 1f);
-
-            AnimationCurve grenadeFallVert = new AnimationCurve();
-            grenadeFallVert.AddKey(0f, 0f);
-            grenadeFallVert.AddKey(0.502f, 0.204f);
-            grenadeFallVert.AddKey(1f, 1f);
-
-
-            AudioSource fragAudio = FragGrenade.spawnPrefab.AddComponent<AudioSource>();
-            fragAudio.clip = bundle.LoadAsset<AudioClip>("Assets/Mod/Cube Thing/fb64d9f6-7584-4a3f-930b-ba6094d37fd5.mp3"); // this kind of works :(
-
-            if (FragGrenade == null) return;
-
-            FragGrenade.weight = 1.04f;
-            FragGrenade.itemId = 69698;
-
-            FragGrenadeScript fragScript = FragGrenade.spawnPrefab.AddComponent<FragGrenadeScript>();
-            fragScript.itemProperties = FragGrenade;
-            fragScript.grabbable = true;
-            fragScript.grabbableToEnemies = true;
-
-            fragScript.trajectoryIndicator = FragGrenade.spawnPrefab.transform.GetChild(2).gameObject;
-            // AudioSource fragAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>(); // omg this works!!! let's go!!!
-
-            fragScript.fragGrenadeExplosion = FragGrenade.spawnPrefab;
-            fragScript.itemAudio = FragGrenade.spawnPrefab.GetComponent<AudioSource>();
-            fragScript.itemAnimator = FragGrenade.spawnPrefab.GetComponent<Animator>();
-            fragScript.DestroyGrenade = true;
-
-            fragScript.grenadeFallCurve = grenadeFall;
-            fragScript.grenadeVerticalFallCurve = grenadeFallVert;
-            fragScript.grenadeVerticalFallCurveNoBounce = grenadeFallVert;
-
-
-
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(FragGrenade.spawnPrefab);
-
             TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();
             node.clearPreviousText = true;
             node.displayText = "kill your foes!\n\n";
             Items.RegisterShopItem(FragGrenade, null, null, node, 0);
-
         }
 
         private void SetupExtendoArm()
