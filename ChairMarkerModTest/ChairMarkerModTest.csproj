@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <BaseOutputPath></BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +31,9 @@
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AIModule">
+      <HintPath>..\..\..\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AIModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AnimationModule">
       <HintPath>..\..\..\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
@@ -49,5 +53,9 @@
       <HintPath>..\..\..\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.dll&quot; &quot;C:\Users\jlamb\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\Chair Marker&quot;&#xD;&#xA;xcopy /y /f &quot;D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.dll&quot; &quot;E:\Unity Projects\LethalCompanyUnityTemplate\Assets\Plugins\ChairMarkerModTest.dll&quot;&#xD;&#xA;" />
+  </Target>
 
 </Project>

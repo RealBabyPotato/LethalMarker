@@ -1,30 +1,15 @@
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.deps.json
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.pdb
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\0Harmony.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Assembly-CSharp.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\BepInEx.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\LethalLib.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.AssetBundleModule.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.CoreModule.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Mono.Cecil.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\MonoMod.Utils.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\MonoMod.RuntimeDetour.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.AnimationModule.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.AudioModule.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.Netcode.Runtime.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.Animation.Rigging.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.PhysicsModule.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.ParticleSystemModule.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.TextMeshPro.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.InputSystem.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.VFXModule.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.AIModule.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.RenderPipelines.HighDefinition.Runtime.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.TerrainModule.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.UI.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.RenderPipelines.Core.Runtime.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.UIModule.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Facepunch.Steamworks.Win64.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\DissonanceVoip.dll
@@ -83,7 +68,6 @@ D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstanda
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.WindModule.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.XRModule.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.ARModule.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.InputModule.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.Multiplayer.Tools.NetStats.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.Multiplayer.Tools.MetricTypes.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.Multiplayer.Tools.NetworkSolutionInterface.dll
@@ -105,7 +89,6 @@ D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstanda
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.Profiling.Core.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\0Harmony.xml
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\BepInEx.xml
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\LethalLib.pdb
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\MonoMod.Utils.xml
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\MonoMod.RuntimeDetour.xml
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.csproj.AssemblyReference.cache
@@ -117,3 +100,21 @@ D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstanda
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.pdb
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.sourcelink.json
+C:\Users\jlamb\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\Chair Marker\Debug\netstandard2.1\ChairMarkerModTest.deps.json
+C:\Users\jlamb\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\Chair Marker\Debug\netstandard2.1\ChairMarkerModTest.dll
+C:\Users\jlamb\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\Chair Marker\Debug\netstandard2.1\ChairMarkerModTest.pdb
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\0Harmony.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Assembly-CSharp.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\BepInEx.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\LethalLib.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.InputSystem.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.Netcode.Runtime.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.RenderPipelines.Core.Runtime.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.AIModule.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.AnimationModule.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.AssetBundleModule.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.AudioModule.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.CoreModule.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.InputModule.dll
+D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\UnityEngine.PhysicsModule.dll

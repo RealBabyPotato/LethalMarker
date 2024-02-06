@@ -1,17 +1,13 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using LethalLib.Modules;
 using System.IO;
 using System.Reflection;
-using BepInEx.Bootstrap;
 using ChairMarkerModTest.Behaviours;
-using Unity.Netcode;
-using System.Security.Cryptography;
-using GameNetcodeStuff;
+using JetBrains.Annotations;
+using UnityEngine.Assertions;
 
 namespace ChairMarkerModTest
 {
@@ -34,14 +30,21 @@ namespace ChairMarkerModTest
             instance = this;
 
 
+
             string assetDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "lethalmarker");
             bundle = AssetBundle.LoadFromFile(assetDir);
 
             SetupItems();
+            SetupEnemies();
 
             mls = BepInEx.Logging.Logger.CreateLogSource(GUID);
             mls.LogInfo("Chair Marker mod up and running!");
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
+        }
+
+        private void SetupEnemies()
+        {
+            SetupNiceGuy();
         }
 
         private void SetupItems()
@@ -49,6 +52,18 @@ namespace ChairMarkerModTest
             SetupCubeThing();
             SetupGrenade();
             SetupExtendoArm();
+        }
+
+        private void SetupNiceGuy()
+        {
+            EnemyType niceGuyType = bundle.LoadAsset<EnemyType>("Assets/Mod/Nice Guy/Nice Guy.asset");
+            Debug.Log(niceGuyType.enemyName); // niceguytype is null
+            //var tlTerminalNode = bundle.LoadAsset<TerminalNode>("Assets/Mod/Nice Guy/Bestiary/Nice Guy Tn.asset");
+            //var tkTerminalNode = bundle.LoadAsset<TerminalKeyword>("Assets/Mod/Nice Guy/Bestiary/Nice Guy Tk.asset"); 
+
+            //NetworkPrefabs.RegisterNetworkPrefab(niceGuyType.enemyPrefab);
+            //LethalLib.Modules.Enemies.RegisterEnemy(niceGuyType, 100, Levels.LevelTypes.All, LethalLib.Modules.Enemies.SpawnType.Outside, tlTerminalNode, tkTerminalNode);
+            Debug.Log("--------------------------------------- enemy loiaded ---------------------------");
         }
 
         private void SetupGrenade()
@@ -62,7 +77,7 @@ namespace ChairMarkerModTest
             Items.RegisterShopItem(FragGrenade, null, null, node, 0);
         }
 
-        private void SetupExtendoArm()
+        private void SetupExtendoArm() // todo: offload these hardcoded things to unity
         {
             Item ExtendoArm = bundle.LoadAsset<Item>("Assets/Mod/Extendo Arm/Extendo Arm.asset");
 
