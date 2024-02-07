@@ -26,7 +26,6 @@ namespace ChairMarkerModTest.Enemies
         {
             base.Update();
             tick++;
-            var direction = (targetPlayer.playerGlobalHead.position - transform.position).normalized;
 
             if (!targetPlayer)
             {
@@ -34,6 +33,8 @@ namespace ChairMarkerModTest.Enemies
 
                 Debug.Log("found player: " + targetPlayer.playerUsername);
             }
+
+            var direction = (targetPlayer.playerGlobalHead.position - transform.position).normalized;
             
             if(tick % 5 == 0)
             {
