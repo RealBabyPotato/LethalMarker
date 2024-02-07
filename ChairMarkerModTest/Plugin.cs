@@ -24,12 +24,11 @@ namespace ChairMarkerModTest
         internal ManualLogSource mls;
 
         AssetBundle bundle;
+        public static EnemyType NiceGuy;
         
         void Awake()
         {
             instance = this;
-
-
 
             string assetDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "lethalmarker");
             bundle = AssetBundle.LoadFromFile(assetDir);
@@ -54,16 +53,15 @@ namespace ChairMarkerModTest
             SetupExtendoArm();
         }
 
-        private void SetupNiceGuy()
+        private void SetupNiceGuy() // FUTURE ME PLEASE DON'T FORGET TO ADD THINGS TO THE ASSET BUNDLE
         {
-            EnemyType niceGuyType = bundle.LoadAsset<EnemyType>("Assets/Mod/Nice Guy/Nice Guy.asset");
-            Debug.Log(niceGuyType.enemyName); // niceguytype is null
-            //var tlTerminalNode = bundle.LoadAsset<TerminalNode>("Assets/Mod/Nice Guy/Bestiary/Nice Guy Tn.asset");
-            //var tkTerminalNode = bundle.LoadAsset<TerminalKeyword>("Assets/Mod/Nice Guy/Bestiary/Nice Guy Tk.asset"); 
+            EnemyType niceGuyType = bundle.LoadAsset<EnemyType>("Assets/Mod/Nice Guy/NiceGuy.asset");
 
-            //NetworkPrefabs.RegisterNetworkPrefab(niceGuyType.enemyPrefab);
-            //LethalLib.Modules.Enemies.RegisterEnemy(niceGuyType, 100, Levels.LevelTypes.All, LethalLib.Modules.Enemies.SpawnType.Outside, tlTerminalNode, tkTerminalNode);
-            Debug.Log("--------------------------------------- enemy loiaded ---------------------------");
+            TerminalNode tlTerminalNode = bundle.LoadAsset<TerminalNode>("Assets/Mod/Nice Guy/Bestiary/Nice Guy Tn.asset");
+            TerminalKeyword tkTerminalKeyword = bundle.LoadAsset<TerminalKeyword>("Assets/Mod/Nice Guy/Bestiary/Nice Guy Tk.asset"); 
+
+            NetworkPrefabs.RegisterNetworkPrefab(niceGuyType.enemyPrefab);
+            LethalLib.Modules.Enemies.RegisterEnemy(niceGuyType, 100, Levels.LevelTypes.All, LethalLib.Modules.Enemies.SpawnType.Outside, tlTerminalNode, tkTerminalKeyword);
         }
 
         private void SetupGrenade()
@@ -140,4 +138,5 @@ namespace ChairMarkerModTest
             Items.RegisterShopItem(CubeThing, null, null, node, 20);
         }
     }
+
 }

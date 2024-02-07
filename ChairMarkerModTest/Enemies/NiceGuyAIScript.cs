@@ -9,6 +9,7 @@ namespace ChairMarkerModTest.Enemies
     internal class NiceGuyAIScript : EnemyAI
     {
         public AudioClip hitSFX;
+        int tick = 0;
 
         //private const float moveSpeed = 4f;
         //private const float rotationSpeed = 4f;
@@ -24,6 +25,8 @@ namespace ChairMarkerModTest.Enemies
         public override void Update()
         {
             base.Update();
+            tick++;
+            var direction = (targetPlayer.playerGlobalHead.position - transform.position).normalized;
 
             if (!targetPlayer)
             {
@@ -31,10 +34,13 @@ namespace ChairMarkerModTest.Enemies
 
                 Debug.Log("found player: " + targetPlayer.playerUsername);
             }
-
-            var direction = (targetPlayer.playerGlobalHead.position - transform.position).normalized;
-            var lookRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 4f);
+            
+            if(tick % 5 == 0)
+            {
+                Debug.Log("tick");
+                var lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 4f);
+            }
             transform.position += direction * (Time.deltaTime * 4f);
         }
     }
