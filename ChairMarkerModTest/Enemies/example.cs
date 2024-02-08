@@ -1,4 +1,4 @@
-﻿using GameNetcodeStuff;
+﻿/*using GameNetcodeStuff;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -405,4 +405,4 @@ namespace ChairMarkerModTest.Enemies
         }
     }
 
-}
+}*/
