@@ -13,7 +13,7 @@ namespace ChairMarkerModTest.Enemies
         public Transform leftPos;
         //public Transform rightPos;
 
-        public Vector3 leftOffset = new Vector3(0, 0.5f, 0);
+        public Vector3 leftOffset = new Vector3(0, 1.4f, 0);
         //public Vector3 rightOffset;
 
         //private const float moveSpeed = 4f;
