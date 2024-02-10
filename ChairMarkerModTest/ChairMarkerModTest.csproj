@@ -55,7 +55,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.dll&quot; &quot;C:\Users\jlamb\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\Chair Marker&quot;&#xD;&#xA;xcopy /y /f &quot;D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.dll&quot; &quot;E:\Unity Projects\LethalCompanyUnityTemplate\Assets\Plugins\ChairMarkerModTest.dll&quot;&#xD;&#xA;echo &quot;----- copied DLL to game directory -----" />
+    <Exec Command="copy &quot;D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.dll&quot; &quot;C:\Users\jlamb\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\Chair Marker&quot;&#xD;&#xA;xcopy /y /f &quot;D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.dll&quot; &quot;E:\Unity Projects\LethalCompanyUnityTemplate\Assets\Plugins\ChairMarkerModTest.dll&quot;&#xD;&#xA;echo &quot;----- copied DLL to game directory -----&#xD;&#xA;xcopy /s /e /y /i &quot;C:\Users\jlamb\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\Chair Marker&quot; &quot;D:\SteamLibrary\steamapps\common\Lethal Company\BepInEx\plugins\Chair Marker&quot;&#xD;&#xA;echo &quot;-- copied Thunderstore folder to Steam folder --&quot;" />
   </Target>
 
 </Project>

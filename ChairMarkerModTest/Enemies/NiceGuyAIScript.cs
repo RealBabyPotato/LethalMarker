@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using UnityEngine;
 using static UnityEngine.LightAnchor;
@@ -10,6 +11,7 @@ using static UnityEngine.LightAnchor;
  * Bell sounds? the bell tolls!
  * Destroys doors?
  * Walkie talkie -- play sounds if within radius??!? (use WalkieTalkie.TransmitOneShotAudio static method)
+ * Sync rotation
  */
 
 
@@ -28,6 +30,10 @@ namespace ChairMarkerModTest.Enemies
         private const float moveSpeed = 4f;
         private const float rotationSpeed = 4f;
 
+        private bool flag;
+
+        public AudioClip bell;
+
         enum State
         {
             Stalking,
@@ -39,7 +45,11 @@ namespace ChairMarkerModTest.Enemies
         {
             base.OnCollideWithPlayer(other);
 
-            Debug.Log("Skibidi Toilet");
+            if (!flag)
+            {
+                WalkieTalkie.TransmitOneShotAudio(creatureVoice, bell, 1);
+                flag = true;
+            }
 
         }
 
@@ -48,23 +58,26 @@ namespace ChairMarkerModTest.Enemies
             base.Update();
             leftPos.position = base.transform.position + leftOffset;
 
-            if (!targetPlayer)
+            if (!targetPlayer && Vector3.Distance(base.transform.position, GetClosestPlayer().transform.position) <= 10f)
             {
                 targetPlayer = GetClosestPlayer();
-
                 Debug.Log("found player: " + targetPlayer.playerUsername);
+
+                var direction = (targetPlayer.playerGlobalHead.position - transform.position).normalized;
+                var lookRotation = Quaternion.LookRotation(direction);
+
+                if (!targetPlayer.HasLineOfSightToPosition(leftPos.position))
+                {
+                    // Debug.Log("Player doesn't have line of sight!");
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
+                    transform.position += direction * (Time.deltaTime * moveSpeed);
+                }
             }
-
-            var direction = (targetPlayer.playerGlobalHead.position - transform.position).normalized;
-            var lookRotation = Quaternion.LookRotation(direction);
-
-            if (!targetPlayer.HasLineOfSightToPosition(leftPos.position))
+            else
             {
-                // Debug.Log("Player doesn't have line of sight!");
-                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
-                transform.position += direction * (Time.deltaTime * moveSpeed);
+                targetPlayer = null;
+                Debug.Log("No player");
             }
-            
         }
     }
 }
