@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
+﻿using System.Collections;
 using UnityEngine;
-using static UnityEngine.LightAnchor;
 
 /* TODO:
  * Stalking state
@@ -48,6 +43,11 @@ namespace ChairMarkerModTest.Enemies
         private float rotationalUpdateTimer;
         private const float rotationUpdateThreshold = 3f;
 
+        private float stalkingTime;
+        private float stalkingTimeThreshold;
+
+        System.Random enemyRandom;
+
         private bool isFleeing;
 
         private float angerMeter;
@@ -71,6 +71,8 @@ namespace ChairMarkerModTest.Enemies
             currentBehaviourStateIndex = (int)State.Searching;
             searchRoutine.searchWidth = 20f;
             searchRoutine.searchPrecision = 3;
+
+            enemyRandom = new System.Random(StartOfRound.Instance.randomMapSeed + thisEnemyIndex);
 
             StartSearch(transform.position);
         }
@@ -117,6 +119,7 @@ namespace ChairMarkerModTest.Enemies
         public override void DoAIInterval()
         {
             base.DoAIInterval();
+            
             if(isEnemyDead || StartOfRound.Instance.allPlayersDead)
             {
                 return;
@@ -172,7 +175,7 @@ namespace ChairMarkerModTest.Enemies
         {
             TargetClosestPlayer(bufferDistance: 1.5f, requireLineOfSight: false);
             if(targetPlayer == null) { return false;  }
-            return targetPlayer != null && Vector3.Distance(transform.position, targetPlayer.transform.position) <= range;
+            return targetPlayer != null && Vector3.Distance(transform.position, targetPlayer.transform.position) <= range && this.HasLineOfSightToPosition(targetPlayer.transform.position);
         }
 
         bool TargetClosestPlayerInAnyCase()
@@ -193,8 +196,13 @@ namespace ChairMarkerModTest.Enemies
         }
 
         void Stalking()
-        {
-            Debug.Log("speed: " + agent.speed + " velocity: " + agent.velocity +  " acceleration: " + agent.acceleration);
+        { 
+            float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
+            Debug.Log("dist to player: " + distanceToPlayer);
+
+            //Debug.Log("speed: " + agent.speed + " velocity: " + agent.velocity +  " acceleration: " + agent.acceleration);
+            stalkingTime += Time.deltaTime;
+            stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 1;
 
             if(targetPlayer == null || !IsOwner)
             {
@@ -202,20 +210,21 @@ namespace ChairMarkerModTest.Enemies
                 return;
             }
 
-            float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
-            Debug.Log(distanceToPlayer);
-
             if (distanceToPlayer <= stalkRange)
             {
                 AvoidClosestPlayer();
                 return;
-            } else if(distanceToPlayer >= 50) 
+            } else if(stalkingTime >= stalkingTimeThreshold)
             {
+                stalkingTime = 0;
                 SwitchToBehaviourClientRpc((int)State.Chanting);
             }
 
-            agent.speed = 0f;
+            agent.speed = 5f;
+            agent.acceleration = 8f;
 
+            Transform far = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: true);
+            SetDestinationToPosition(far.position);
         }
 
         void Chanting()
@@ -240,7 +249,6 @@ namespace ChairMarkerModTest.Enemies
 
             while (true)
             {
-                Debug.Log("attempting flee");
                 float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
                 
                 // player has successfully scared off nice guy
@@ -255,14 +263,14 @@ namespace ChairMarkerModTest.Enemies
                 AvoidClosestPlayer();
                 yield return null;
             }
-
-
         }
 
         private void AvoidClosestPlayer()
         {
 
             Transform farthestNodeTransform = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: false);
+            // float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
+            // Debug.Log("dist from node to player: " + Vector3.Distance(targetPlayer.transform.position, farthestNodeTransform.transform.position) + " dist to player: " + distanceToPlayer);
             if (farthestNodeTransform != null)
             {
                 agent.speed = 60f;
@@ -275,6 +283,11 @@ namespace ChairMarkerModTest.Enemies
             {
                 SwitchToBehaviourClientRpc((int)State.Attacking); 
             }
+
+        }
+
+        private void PathToClosestNodeOutOfRange(float range)
+        {
 
         }
 
