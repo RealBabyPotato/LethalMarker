@@ -56,8 +56,11 @@ namespace ChairMarkerModTest.Enemies
             base.Start();
 
             // animations
-            Debug.Log("Nice Guy spawned");
             currentBehaviourStateIndex = (int)State.Searching;
+            searchRoutine.searchWidth = 20f;
+            searchRoutine.searchPrecision = 3;
+
+            // targetNode = ChooseClosestNodeToPosition(base.transform.position);
         }
 
         public override void OnCollideWithPlayer(Collider other)
@@ -142,6 +145,10 @@ namespace ChairMarkerModTest.Enemies
                 case (int)State.Searching:
                     agent.speed = 5f;
                     agent.acceleration = 8f;
+
+                    var asdf = targetNode != null ? targetNode.transform : null;
+                    Debug.Log("targetnode: " + asdf + " searchroutine: " + searchRoutine.inProgress);
+
                     break;
 
                 case (int)State.Stalking:
@@ -164,12 +171,18 @@ namespace ChairMarkerModTest.Enemies
         void SearchForPlayerUnlessInRange(float range, ref AISearchRoutine searchRoutine)
         {
             TargetClosestPlayer();
+            if(targetPlayer != null)
+            {
+                Debug.Log(Vector3.Distance(this.transform.position, targetPlayer.transform.position));
+            } else { Debug.Log("TARGET PLAYER NULL! "); }
+
             if (targetPlayer != null && Vector3.Distance(base.transform.position, targetPlayer.transform.position) <= range)
             {
                 if (searchRoutine.inProgress)
                 {
                     StopSearch(searchRoutine);
                     SwitchToBehaviourClientRpc((int)State.Stalking);
+                    return;
                 }
             }
             else
@@ -178,14 +191,15 @@ namespace ChairMarkerModTest.Enemies
                 {
                     StartSearch(transform.position, searchRoutine);
                     SwitchToBehaviourClientRpc((int)State.Searching);
+                    return;
                 }
             }
+
+
         }
 
         void Stalking()
         {
-
-
             Debug.Log("speed: " + agent.speed + " velocity: " + agent.velocity +  " acceleration: " + agent.acceleration);
 
             if(targetPlayer == null || !IsOwner)
@@ -207,11 +221,11 @@ namespace ChairMarkerModTest.Enemies
             float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
 
             Transform farthestNodeTransform = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: true);
-            if (distanceToPlayer <= 20f && distanceToPlayer >= 5f && farthestNodeTransform != null) //&& this.HasLineOfSightToPosition(targetPlayer.transform.position)) // player is near ish, run away
+            if (distanceToPlayer <= 20f && farthestNodeTransform != null) //&& this.HasLineOfSightToPosition(targetPlayer.transform.position)) // player is near ish, run away
             {
                 agent.speed = 60f;
                 agent.acceleration = 50f;
-                Debug.Log("avoiding closest player, distance: " + distanceToPlayer);
+                Debug.Log("avoiding closest player, distance: " + distanceToPlayer + " num nodes: " + allAINodes.Length);
                 targetNode = farthestNodeTransform;
                 SetDestinationToPosition(targetNode.position);
                 return;
