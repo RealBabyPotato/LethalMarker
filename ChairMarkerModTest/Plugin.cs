@@ -61,7 +61,7 @@ namespace ChairMarkerModTest
             TerminalKeyword tkTerminalKeyword = bundle.LoadAsset<TerminalKeyword>("Assets/Mod/Nice Guy/Bestiary/Nice Guy Tk.asset"); 
 
             NetworkPrefabs.RegisterNetworkPrefab(niceGuyType.enemyPrefab);
-            LethalLib.Modules.Enemies.RegisterEnemy(niceGuyType, 100, Levels.LevelTypes.All, LethalLib.Modules.Enemies.SpawnType.Outside, tlTerminalNode, tkTerminalKeyword);
+            LethalLib.Modules.Enemies.RegisterEnemy(niceGuyType, 100, Levels.LevelTypes.All, LethalLib.Modules.Enemies.SpawnType.Default, tlTerminalNode, tkTerminalKeyword);
         }
 
         private void SetupGrenade()
