@@ -48,6 +48,8 @@ namespace ChairMarkerModTest.Enemies
         private float rotationalUpdateTimer;
         private const float rotationUpdateThreshold = 3f;
 
+        private bool isFleeing;
+
         private float angerMeter;
         private const float stalkRange = 20f;
 
@@ -56,6 +58,7 @@ namespace ChairMarkerModTest.Enemies
             Searching,
             Stalking,
             Chanting,
+            Fleeing,
             Chasing,
             Attacking
         }
@@ -69,7 +72,7 @@ namespace ChairMarkerModTest.Enemies
             searchRoutine.searchWidth = 20f;
             searchRoutine.searchPrecision = 3;
 
-            // targetNode = ChooseClosestNodeToPosition(base.transform.position);
+            StartSearch(transform.position);
         }
 
         public override void OnCollideWithPlayer(Collider other)
@@ -119,21 +122,36 @@ namespace ChairMarkerModTest.Enemies
                 return;
             }
 
-            if(currentBehaviourStateIndex != (int)State.Stalking || currentBehaviourStateIndex != (int)State.Chanting) SearchForPlayerUnlessInRange(60, ref searchRoutine); // change range later!
-
             switch (currentBehaviourStateIndex)
             {
                 case (int)State.Searching:
                     agent.speed = 5f;
                     agent.acceleration = 8f;
+
+                    if (FoundClosestPlayerInRange(stalkRange))
+                    {
+                        StopSearch(currentSearch);
+                        SwitchToBehaviourClientRpc((int)State.Stalking);
+                    }
+
                     break;
 
                 case (int)State.Stalking:
+                    if (!TargetClosestPlayerInAnyCase())  
+                    {
+                        StartSearch(transform.position);
+                        SwitchToBehaviourClientRpc((int)State.Searching);
+                        return;
+                    }
                     Stalking();
                     break;
 
                 case (int)State.Chanting:
                     Chanting();
+                    break;
+
+                case (int)State.Fleeing:
+                    // placeholder state
                     break;
 
                 case (int)State.Chasing:
@@ -149,34 +167,29 @@ namespace ChairMarkerModTest.Enemies
             }
         }
 
-        void SearchForPlayerUnlessInRange(float range, ref AISearchRoutine searchRoutine)
+        // courtesy of ExampleEnemy on Github
+        bool FoundClosestPlayerInRange(float range)
         {
-            TargetClosestPlayer();
-            if (targetPlayer != null)
-            {
-                Debug.Log(Vector3.Distance(this.transform.position, targetPlayer.transform.position));
-            }
+            TargetClosestPlayer(bufferDistance: 1.5f, requireLineOfSight: false);
+            if(targetPlayer == null) { return false;  }
+            return targetPlayer != null && Vector3.Distance(transform.position, targetPlayer.transform.position) <= range;
+        }
 
-            if (targetPlayer != null && Vector3.Distance(base.transform.position, targetPlayer.transform.position) <= range)
+        bool TargetClosestPlayerInAnyCase()
+        {
+            mostOptimalDistance = 2000f;
+            targetPlayer = null;
+            for (int i = 0; i < StartOfRound.Instance.connectedPlayersAmount + 1; i++)
             {
-                if (searchRoutine.inProgress)
+                tempDist = Vector3.Distance(transform.position, StartOfRound.Instance.allPlayerScripts[i].transform.position);
+                if (tempDist < mostOptimalDistance)
                 {
-                    StopSearch(searchRoutine);
-                    SwitchToBehaviourClientRpc((int)State.Stalking);
-                    return;
+                    mostOptimalDistance = tempDist;
+                    targetPlayer = StartOfRound.Instance.allPlayerScripts[i];
                 }
             }
-            else
-            {
-                if (!searchRoutine.inProgress)
-                {
-                    StartSearch(transform.position, searchRoutine);
-                    SwitchToBehaviourClientRpc((int)State.Searching);
-                    return;
-                }
-            }
-
-
+            if (targetPlayer == null) return false;
+            return true;
         }
 
         void Stalking()
@@ -190,7 +203,7 @@ namespace ChairMarkerModTest.Enemies
             }
 
             float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
-            // Debug.Log(distanceToPlayer);
+            Debug.Log(distanceToPlayer);
 
             if (distanceToPlayer <= stalkRange)
             {
@@ -198,7 +211,7 @@ namespace ChairMarkerModTest.Enemies
                 return;
             } else if(distanceToPlayer >= 50) 
             {
-                SwitchToBehaviourState((int)State.Chanting);
+                SwitchToBehaviourClientRpc((int)State.Chanting);
             }
 
             agent.speed = 0f;
@@ -210,24 +223,47 @@ namespace ChairMarkerModTest.Enemies
             HandlePlayerVision();
 
             agent.speed = 0f;
-            Debug.Log("chanting ahhh");
         }
 
         private void HandlePlayerVision()
         {
-            if (targetPlayer.HasLineOfSightToPosition(leftPos.position))
+            if (targetPlayer.HasLineOfSightToPosition(leftPos.position) && !isFleeing)
             {
-                Debug.Log("PLAYER IS LOOKING at me");
-                AvoidClosestPlayer();
-                SwitchToBehaviourState((int)State.Stalking);
+                 StartCoroutine(Flee());
             }
+        }
+
+        private IEnumerator Flee()
+        {
+            isFleeing = true;
+            SwitchToBehaviourClientRpc((int)State.Fleeing);
+
+            while (true)
+            {
+                Debug.Log("attempting flee");
+                float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
+                
+                // player has successfully scared off nice guy
+                if(distanceToPlayer >= 50)
+                {
+                    isFleeing = false;
+                    SwitchToBehaviourClientRpc((int)State.Searching);
+                    StartSearch(transform.position);
+                    yield break;
+                }
+
+                AvoidClosestPlayer();
+                yield return null;
+            }
+
+
         }
 
         private void AvoidClosestPlayer()
         {
 
-            Transform farthestNodeTransform = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: true);
-            if (farthestNodeTransform != null) //&& this.HasLineOfSightToPosition(targetPlayer.transform.position)) // player is near ish, run away
+            Transform farthestNodeTransform = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: false);
+            if (farthestNodeTransform != null)
             {
                 agent.speed = 60f;
                 agent.acceleration = 50f;
@@ -237,8 +273,7 @@ namespace ChairMarkerModTest.Enemies
             }
             else
             {
-                //Debug.Log(farthestNodeTransform);
-                SwitchToBehaviourState((int)State.Attacking); 
+                SwitchToBehaviourClientRpc((int)State.Attacking); 
             }
 
         }
