@@ -25,7 +25,9 @@ namespace ChairMarkerModTest.Enemies
 {
     internal class NiceGuyAIScript : EnemyAI
     {
-        public AudioClip hitSFX;
+        public AudioClip chanting;
+        public AudioClip warning;
+        public AudioClip[] hissing;
 
         public Transform leftPos;
         //public Transform rightPos;
@@ -52,6 +54,9 @@ namespace ChairMarkerModTest.Enemies
 
         private float angerMeter;
         private const float stalkRange = 20f;
+        private const float beginChantRange = 30f;
+
+        // Transform lastTraversedNode;
 
         enum State
         {
@@ -73,6 +78,7 @@ namespace ChairMarkerModTest.Enemies
             searchRoutine.searchPrecision = 3;
 
             enemyRandom = new System.Random(StartOfRound.Instance.randomMapSeed + thisEnemyIndex);
+            creatureVoice.volume = 2f;
 
             StartSearch(transform.position);
         }
@@ -134,6 +140,8 @@ namespace ChairMarkerModTest.Enemies
                     if (FoundClosestPlayerInRange(stalkRange))
                     {
                         StopSearch(currentSearch);
+                        //creatureVoice.clip = warning;
+                        creatureVoice.PlayOneShot(warning);
                         SwitchToBehaviourClientRpc((int)State.Stalking);
                     }
 
@@ -194,15 +202,29 @@ namespace ChairMarkerModTest.Enemies
             if (targetPlayer == null) return false;
             return true;
         }
-
+        /*
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * CLAMP FARTHESTNODEFROMPLAYER IN AVOIDPLAYER, IN ORDER TO PREVENT NICWEGUY FROM RUNNNING TOO FAR (CLAMP TO STALKRANGE WITH ERROR RANGE OF 10?)
+         * 
+         * 
+         * 
+         * 
+         * 
+         */ 
         void Stalking()
         { 
             float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
-            Debug.Log("dist to player: " + distanceToPlayer);
 
             //Debug.Log("speed: " + agent.speed + " velocity: " + agent.velocity +  " acceleration: " + agent.acceleration);
             stalkingTime += Time.deltaTime;
-            stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 1;
+            stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 100000;
 
             if(targetPlayer == null || !IsOwner)
             {
@@ -210,21 +232,40 @@ namespace ChairMarkerModTest.Enemies
                 return;
             }
 
-            if (distanceToPlayer <= stalkRange)
+            if (distanceToPlayer <= stalkRange || targetPlayer.HasLineOfSightToPosition(base.transform.position))
             {
-                AvoidClosestPlayer();
+                AvoidClosestPlayer(distanceToPlayer);
                 return;
-            } else if(stalkingTime >= stalkingTimeThreshold)
+            } else if(stalkingTime >= stalkingTimeThreshold && distanceToPlayer <= beginChantRange)
             {
                 stalkingTime = 0;
+                creatureVoice.clip = chanting;
+                creatureVoice.time = Random.value * (chanting.length / 4);
+                //creatureVoice.PlayOneShot(chanting);
                 SwitchToBehaviourClientRpc((int)State.Chanting);
             }
 
             agent.speed = 5f;
             agent.acceleration = 8f;
 
-            Transform far = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: true);
-            SetDestinationToPosition(far.position);
+            /*Transform enemyNode = ChooseClosestNodeToPosition(base.transform.position, avoidLineOfSight: true);
+            Transform playerNode = targetPlayer.ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: true);
+
+            //float eNodeDistance = Vector3.Distance(targetPlayer.transform.position, enemyNode.transform.position);
+            float pNodeDistance = Vector3.Distance(targetPlayer.transform.position, playerNode.transform.position);
+            Debug.Log("eNode: " + eNodeDistance + "pNode: " + pNodeDistance);
+
+            if(eNodeDistance < pNodeDistance)
+            {
+                SetDestinationToPosition(enemyNode.position);
+            }
+            else
+            {
+                SetDestinationToPosition(playerNode.position);
+            }*/
+            Transform playerNode = ChooseClosestNodeToPosition(targetPlayer.transform.position, avoidLineOfSight: true);
+            SetDestinationToPosition(playerNode.position);
+
         }
 
         void Chanting()
@@ -239,6 +280,7 @@ namespace ChairMarkerModTest.Enemies
             if (targetPlayer.HasLineOfSightToPosition(leftPos.position) && !isFleeing)
             {
                  StartCoroutine(Flee());
+                creatureVoice.Stop();
             }
         }
 
@@ -265,18 +307,32 @@ namespace ChairMarkerModTest.Enemies
             }
         }
 
-        private void AvoidClosestPlayer()
+        private void AvoidClosestPlayer(float distanceToPlayer = 1f)
         {
 
-            Transform farthestNodeTransform = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: false);
+            Transform farthestNodeTransform = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: true);
+            Transform farthestNodeTransformBackup = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: false);
+            Transform target;
+            
+            if(Vector3.Distance(farthestNodeTransform.position, targetPlayer.transform.position) > Vector3.Distance(farthestNodeTransformBackup.position, targetPlayer.transform.position)){
+                target = farthestNodeTransform;
+            }
+            else
+            {
+                target = farthestNodeTransformBackup;
+            }
+            
             // float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
             // Debug.Log("dist from node to player: " + Vector3.Distance(targetPlayer.transform.position, farthestNodeTransform.transform.position) + " dist to player: " + distanceToPlayer);
-            if (farthestNodeTransform != null)
+            if (target != null) //&& farthestNodeTransform != lastTraversedNode)
             {
-                agent.speed = 60f;
-                agent.acceleration = 50f;
+                agent.acceleration = 150f;
+                // agent.speed = 60f / Mathf.Clamp(distanceToPlayer, 0.75f, 3f);
+                agent.speed = 60f / distanceToPlayer;
+                Debug.Log(agent.speed);
                 targetNode = farthestNodeTransform;
                 SetDestinationToPosition(targetNode.position);
+                // lastTraversedNode = farthestNodeTransform;
                 return;
             }
             else
