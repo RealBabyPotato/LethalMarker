@@ -150,7 +150,8 @@ namespace ChairMarkerModTest.Enemies
                     {
                         StopSearch(currentSearch);
                         //creatureVoice.clip = warning;
-                        creatureVoice.PlayOneShot(warning);
+                        //creatureVoice.PlayOneShot(warning);
+                        PlayWarning();
                         //PlayWarnClientRpc();
                         SwitchToBehaviourClientRpc((int)State.Stalking);
                     }
@@ -191,6 +192,8 @@ namespace ChairMarkerModTest.Enemies
                     Debug.Log("Current behaviour state doesn't exist!");
                     break;
             }
+
+            SyncPositionToClients();
         }
 
         // courtesy of ExampleEnemy on Github
@@ -242,7 +245,7 @@ namespace ChairMarkerModTest.Enemies
                 if(repositionTime >= repositionTimerThreshold)
                 {
                     repositionTime = 0;
-                    creatureVoice.PlayOneShot(warning);
+                    creatureVoice.PlayOneShot(warning); // FIX WITH RPC IF IT WORKS
                     SwitchToBehaviourClientRpc((int)State.Chasing);
                 } else if(repositionTime % (repositionTimerThreshold/4) <= 0.02 && !creatureVoice.isPlaying)
                 {
@@ -343,6 +346,31 @@ namespace ChairMarkerModTest.Enemies
 
         }
 
-    }
+        private void PlayWarning() // doesn't work; remove.
+        {
+            if (base.IsServer)
+            {
+                PlayWarningClientRpc();
+            }
+            else
+            {
+                PlayWarningServerRpc();
+            }
+        }
 
+        [ServerRpc(RequireOwnership = false)]
+        private void PlayWarningServerRpc()
+        {
+            Debug.Log("warning server");
+            PlayWarningClientRpc();
+        }
+
+        [ClientRpc]
+        private void PlayWarningClientRpc()
+        {
+            Debug.Log("warning client");
+            creatureVoice.PlayOneShot(warning);
+        }
+        
+    }
 }
