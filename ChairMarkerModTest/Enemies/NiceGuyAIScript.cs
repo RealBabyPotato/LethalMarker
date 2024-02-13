@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Networking;
 
 /* TODO:
  * Stalking state
@@ -42,18 +44,25 @@ namespace ChairMarkerModTest.Enemies
 
         public AISearchRoutine searchRoutine;
 
+        #region timers
+
         private float rotationalUpdateTimer;
         private const float rotationUpdateThreshold = 3f;
 
         private float stalkingTime;
         private float stalkingTimeThreshold;
 
+        private float repositionTime;
+        private const float repositionTimerThreshold = 1.3f;
+
+        #endregion
+
         System.Random enemyRandom;
 
         private bool isFleeing;
 
         private float angerMeter;
-        private const float stalkRange = 20f;
+        private const float stalkRange = 15f;
         private const float beginChantRange = 30f;
 
         // Transform lastTraversedNode;
@@ -89,7 +98,7 @@ namespace ChairMarkerModTest.Enemies
 
             if (!flag)
             {
-                WalkieTalkie.TransmitOneShotAudio(creatureVoice, bell, 1);
+                //WalkieTalkie.TransmitOneShotAudio(creatureVoice, bell, 1);
                 flag = true;
             }
 
@@ -142,6 +151,7 @@ namespace ChairMarkerModTest.Enemies
                         StopSearch(currentSearch);
                         //creatureVoice.clip = warning;
                         creatureVoice.PlayOneShot(warning);
+                        //PlayWarnClientRpc();
                         SwitchToBehaviourClientRpc((int)State.Stalking);
                     }
 
@@ -158,6 +168,11 @@ namespace ChairMarkerModTest.Enemies
                     break;
 
                 case (int)State.Chanting:
+
+                    creatureVoice.clip = chanting;
+                    creatureVoice.time = Random.value * (chanting.length / 4);
+                    creatureVoice.Play();
+
                     Chanting();
                     break;
 
@@ -169,7 +184,7 @@ namespace ChairMarkerModTest.Enemies
                     Debug.Log("chasing");
                     break;
 
-                case (int)State.Attacking: 
+                case (int)State.Attacking:
                     break;
 
                 default:
@@ -202,29 +217,16 @@ namespace ChairMarkerModTest.Enemies
             if (targetPlayer == null) return false;
             return true;
         }
-        /*
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * CLAMP FARTHESTNODEFROMPLAYER IN AVOIDPLAYER, IN ORDER TO PREVENT NICWEGUY FROM RUNNNING TOO FAR (CLAMP TO STALKRANGE WITH ERROR RANGE OF 10?)
-         * 
-         * 
-         * 
-         * 
-         * 
-         */ 
+
         void Stalking()
         { 
             float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
 
-            //Debug.Log("speed: " + agent.speed + " velocity: " + agent.velocity +  " acceleration: " + agent.acceleration);
             stalkingTime += Time.deltaTime;
-            stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 100000;
+            stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 2.5f;
+
+            Debug.Log("stalkingTime: " + stalkingTime + " repositionTime: " + repositionTime);
+            //NetworkLog.LogInfo("stalkingTime: " + stalkingTime + " repositionTime: " + repositionTime);
 
             if(targetPlayer == null || !IsOwner)
             {
@@ -234,35 +236,37 @@ namespace ChairMarkerModTest.Enemies
 
             if (distanceToPlayer <= stalkRange || targetPlayer.HasLineOfSightToPosition(base.transform.position))
             {
+                repositionTime += Time.deltaTime;
+
+                // switch to aggressive if player follows around too much while fleeing
+                if(repositionTime >= repositionTimerThreshold)
+                {
+                    repositionTime = 0;
+                    creatureVoice.PlayOneShot(warning);
+                    SwitchToBehaviourClientRpc((int)State.Chasing);
+                } else if(repositionTime % (repositionTimerThreshold/4) <= 0.02 && !creatureVoice.isPlaying)
+                {
+                    creatureVoice.PlayOneShot(hissing[enemyRandom.Next(0, hissing.Length - 1)]);
+                }
+
                 AvoidClosestPlayer(distanceToPlayer);
                 return;
             } else if(stalkingTime >= stalkingTimeThreshold && distanceToPlayer <= beginChantRange)
             {
                 stalkingTime = 0;
-                creatureVoice.clip = chanting;
+                repositionTime = 0;
+                /*creatureVoice.clip = chanting;
                 creatureVoice.time = Random.value * (chanting.length / 4);
+                creatureVoice.Play();*/
                 //creatureVoice.PlayOneShot(chanting);
                 SwitchToBehaviourClientRpc((int)State.Chanting);
             }
 
+            repositionTime = 0;
+
             agent.speed = 5f;
             agent.acceleration = 8f;
 
-            /*Transform enemyNode = ChooseClosestNodeToPosition(base.transform.position, avoidLineOfSight: true);
-            Transform playerNode = targetPlayer.ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: true);
-
-            //float eNodeDistance = Vector3.Distance(targetPlayer.transform.position, enemyNode.transform.position);
-            float pNodeDistance = Vector3.Distance(targetPlayer.transform.position, playerNode.transform.position);
-            Debug.Log("eNode: " + eNodeDistance + "pNode: " + pNodeDistance);
-
-            if(eNodeDistance < pNodeDistance)
-            {
-                SetDestinationToPosition(enemyNode.position);
-            }
-            else
-            {
-                SetDestinationToPosition(playerNode.position);
-            }*/
             Transform playerNode = ChooseClosestNodeToPosition(targetPlayer.transform.position, avoidLineOfSight: true);
             SetDestinationToPosition(playerNode.position);
 
@@ -280,7 +284,7 @@ namespace ChairMarkerModTest.Enemies
             if (targetPlayer.HasLineOfSightToPosition(leftPos.position) && !isFleeing)
             {
                  StartCoroutine(Flee());
-                creatureVoice.Stop();
+                 creatureVoice.Stop();
             }
         }
 
@@ -322,14 +326,11 @@ namespace ChairMarkerModTest.Enemies
                 target = farthestNodeTransformBackup;
             }
             
-            // float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
-            // Debug.Log("dist from node to player: " + Vector3.Distance(targetPlayer.transform.position, farthestNodeTransform.transform.position) + " dist to player: " + distanceToPlayer);
             if (target != null) //&& farthestNodeTransform != lastTraversedNode)
             {
                 agent.acceleration = 150f;
-                // agent.speed = 60f / Mathf.Clamp(distanceToPlayer, 0.75f, 3f);
-                agent.speed = 60f / distanceToPlayer;
-                Debug.Log(agent.speed);
+                agent.speed = 60f / (distanceToPlayer / 3);
+                Debug.Log("Speed: " + agent.speed + " distance: " + distanceToPlayer);
                 targetNode = farthestNodeTransform;
                 SetDestinationToPosition(targetNode.position);
                 // lastTraversedNode = farthestNodeTransform;
@@ -339,11 +340,6 @@ namespace ChairMarkerModTest.Enemies
             {
                 SwitchToBehaviourClientRpc((int)State.Attacking); 
             }
-
-        }
-
-        private void PathToClosestNodeOutOfRange(float range)
-        {
 
         }
 
