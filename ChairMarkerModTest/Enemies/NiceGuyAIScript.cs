@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using GameNetcodeStuff;
 using UnityEngine.Networking;
 
 /* TODO:
@@ -41,6 +42,8 @@ namespace ChairMarkerModTest.Enemies
 
         public AudioClip bell;
         public Transform turnCompass;
+
+        //private NetworkVariable<float> stalkingTimerSynced = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         public AISearchRoutine searchRoutine;
 
@@ -113,11 +116,8 @@ namespace ChairMarkerModTest.Enemies
             {
                 Debug.Log((State)currentBehaviourStateIndex);
                 rotationalUpdateTimer = 0;
+                PlayWarningClientRpc();
             }
-            /*
-                turnCompass.LookAt(targetPlayer.gameplayCamera.transform.position);
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 4f * Time.deltaTime);
-            */
 
             if (targetPlayer != null && PlayerIsTargetable(targetPlayer) && !searchRoutine.inProgress) 
             {
@@ -129,6 +129,20 @@ namespace ChairMarkerModTest.Enemies
             {
                 agent.speed = 0;
             }
+
+            //Debug.Log(stalkingTimerSynced.Value);
+
+            /*if(stalkingTime > stalkingTimeThreshold)
+            {
+                PlayWarningClientRpc();
+            }*/
+        }
+
+        [ClientRpc]
+        private void PlayWarningClientRpc()
+        {
+            creatureVoice.PlayOneShot(warning);
+            Debug.Log("PlayWarningClientRpc Called (please show this on the client console :((((");
         }
 
         public override void DoAIInterval()
@@ -149,10 +163,8 @@ namespace ChairMarkerModTest.Enemies
                     if (FoundClosestPlayerInRange(stalkRange))
                     {
                         StopSearch(currentSearch);
-                        //creatureVoice.clip = warning;
-                        //creatureVoice.PlayOneShot(warning);
-                        PlayWarning();
-                        //PlayWarnClientRpc();
+                        // creatureVoice.PlayOneShot(warning);
+                        PlayWarningClientRpc();
                         SwitchToBehaviourClientRpc((int)State.Stalking);
                     }
 
@@ -228,7 +240,9 @@ namespace ChairMarkerModTest.Enemies
             stalkingTime += Time.deltaTime;
             stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 2.5f;
 
-            Debug.Log("stalkingTime: " + stalkingTime + " repositionTime: " + repositionTime);
+            //stalkingTimerSynced.Value += Time.deltaTime;
+
+            // Debug.Log("stalkingTime: " + stalkingTime + " repositionTime: " + repositionTime);
             //NetworkLog.LogInfo("stalkingTime: " + stalkingTime + " repositionTime: " + repositionTime);
 
             if(targetPlayer == null || !IsOwner)
@@ -345,32 +359,5 @@ namespace ChairMarkerModTest.Enemies
             }
 
         }
-
-        private void PlayWarning() // doesn't work; remove.
-        {
-            if (base.IsServer)
-            {
-                PlayWarningClientRpc();
-            }
-            else
-            {
-                PlayWarningServerRpc();
-            }
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        private void PlayWarningServerRpc()
-        {
-            Debug.Log("warning server");
-            PlayWarningClientRpc();
-        }
-
-        [ClientRpc]
-        private void PlayWarningClientRpc()
-        {
-            Debug.Log("warning client");
-            creatureVoice.PlayOneShot(warning);
-        }
-        
     }
 }
