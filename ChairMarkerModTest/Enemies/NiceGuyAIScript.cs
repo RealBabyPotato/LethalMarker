@@ -99,7 +99,6 @@ namespace ChairMarkerModTest.Enemies
 
             if (!flag)
             {
-                //WalkieTalkie.TransmitOneShotAudio(creatureVoice, bell, 1);
                 flag = true;
             }
 
@@ -249,8 +248,6 @@ namespace ChairMarkerModTest.Enemies
                     Debug.Log("Current behaviour state doesn't exist!");
                     break;
             }
-
-            SyncPositionToClients();
         }
 
         // courtesy of ExampleEnemy on Github
@@ -281,9 +278,6 @@ namespace ChairMarkerModTest.Enemies
         void Stalking()
         { 
             float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
-
-            /*stalkingTime += Time.deltaTime;
-            stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 2.5f;*/
 
             if(targetPlayer == null || !IsOwner)
             {
