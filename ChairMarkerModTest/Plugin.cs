@@ -39,6 +39,20 @@ namespace ChairMarkerModTest
             mls = BepInEx.Logging.Logger.CreateLogSource(GUID);
             mls.LogInfo("Chair Marker mod up and running!");
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
+
+            var types = Assembly.GetExecutingAssembly().GetTypes();
+            foreach (var type in types)
+            {
+                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                foreach (var method in methods)
+                {
+                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
+                    if (attributes.Length > 0)
+                    {
+                        method.Invoke(null, null);
+                    }
+                }
+            }
         }
 
         private void SetupEnemies()

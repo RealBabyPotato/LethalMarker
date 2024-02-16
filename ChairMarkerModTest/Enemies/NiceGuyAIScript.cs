@@ -68,8 +68,6 @@ namespace ChairMarkerModTest.Enemies
         private const float stalkRange = 15f;
         private const float beginChantRange = 30f;
 
-        // Transform lastTraversedNode;
-
         enum State
         {
             Searching,
@@ -115,8 +113,8 @@ namespace ChairMarkerModTest.Enemies
             if(rotationalUpdateTimer >= rotationUpdateThreshold)
             {
                 Debug.Log((State)currentBehaviourStateIndex);
+                Debug.Log("stalkingTime: " + stalkingTime + " threshold: " + stalkingTimeThreshold);
                 rotationalUpdateTimer = 0;
-                PlayWarningClientRpc();
             }
 
             if (targetPlayer != null && PlayerIsTargetable(targetPlayer) && !searchRoutine.inProgress) 
@@ -130,12 +128,65 @@ namespace ChairMarkerModTest.Enemies
                 agent.speed = 0;
             }
 
-            //Debug.Log(stalkingTimerSynced.Value);
-
-            /*if(stalkingTime > stalkingTimeThreshold)
+            switch (currentBehaviourStateIndex)
             {
-                PlayWarningClientRpc();
-            }*/
+                case (int)State.Searching:
+                    stalkingTime = 0;
+                    break;
+
+                case (int)State.Stalking:
+
+                    stalkingTime += Time.deltaTime;
+                    stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 12.5f;
+
+                    break;
+
+                case (int)State.Chanting:
+                    stalkingTime = 0;
+
+                    if (!creatureVoice.isPlaying)
+                    {
+                        PlayChantClientRpc();
+                    }
+
+                    break;
+
+                case (int)State.Fleeing:
+                    stalkingTime = 0;
+                    // placeholder state
+                    break;
+
+                case (int)State.Chasing:
+                    stalkingTime = 0;
+                    break;
+
+                case (int)State.Attacking:
+                    stalkingTime = 0;
+                    break;
+
+                default:
+                    stalkingTime = 0;
+                    Debug.Log("Current behaviour state doesn't exist!");
+                    break;
+            }
+
+
+        }
+
+       [ClientRpc]
+        private void PlayRattleClientRpc()
+        {
+            creatureVoice.PlayOneShot(hissing[enemyRandom.Next(0, hissing.Length - 1)]);
+            Debug.Log("rattling!");
+        }
+
+        [ClientRpc]
+        private void PlayChantClientRpc() // rn this randmoizes the clip starting length, meant for chanting state
+        {
+            creatureVoice.clip = chanting; 
+            creatureVoice.time = Random.value * (chanting.length / 4);
+            Debug.Log("clip randomized length: " + creatureVoice.time);
+            creatureVoice.Play();
         }
 
         [ClientRpc]
@@ -148,6 +199,7 @@ namespace ChairMarkerModTest.Enemies
         public override void DoAIInterval()
         {
             base.DoAIInterval();
+            // PlayWarningClientRpc();
             
             if(isEnemyDead || StartOfRound.Instance.allPlayersDead)
             {
@@ -163,8 +215,6 @@ namespace ChairMarkerModTest.Enemies
                     if (FoundClosestPlayerInRange(stalkRange))
                     {
                         StopSearch(currentSearch);
-                        // creatureVoice.PlayOneShot(warning);
-                        PlayWarningClientRpc();
                         SwitchToBehaviourClientRpc((int)State.Stalking);
                     }
 
@@ -181,11 +231,6 @@ namespace ChairMarkerModTest.Enemies
                     break;
 
                 case (int)State.Chanting:
-
-                    creatureVoice.clip = chanting;
-                    creatureVoice.time = Random.value * (chanting.length / 4);
-                    creatureVoice.Play();
-
                     Chanting();
                     break;
 
@@ -237,20 +282,16 @@ namespace ChairMarkerModTest.Enemies
         { 
             float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
 
-            stalkingTime += Time.deltaTime;
-            stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 2.5f;
-
-            //stalkingTimerSynced.Value += Time.deltaTime;
-
-            // Debug.Log("stalkingTime: " + stalkingTime + " repositionTime: " + repositionTime);
-            //NetworkLog.LogInfo("stalkingTime: " + stalkingTime + " repositionTime: " + repositionTime);
+            /*stalkingTime += Time.deltaTime;
+            stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 2.5f;*/
 
             if(targetPlayer == null || !IsOwner)
             {
-                Debug.Log("target player null while stalking");
+                Debug.Log("target player null while stalking or we aren't owner!");
                 return;
             }
 
+            // player is too close -- reposition or get angry!
             if (distanceToPlayer <= stalkRange || targetPlayer.HasLineOfSightToPosition(base.transform.position))
             {
                 repositionTime += Time.deltaTime;
@@ -259,11 +300,11 @@ namespace ChairMarkerModTest.Enemies
                 if(repositionTime >= repositionTimerThreshold)
                 {
                     repositionTime = 0;
-                    creatureVoice.PlayOneShot(warning); // FIX WITH RPC IF IT WORKS
+                    PlayWarningClientRpc();
                     SwitchToBehaviourClientRpc((int)State.Chasing);
-                } else if(repositionTime % (repositionTimerThreshold/4) <= 0.02 && !creatureVoice.isPlaying)
+                } else if(repositionTime % (repositionTimerThreshold/4) <= 0.05 && !creatureVoice.isPlaying)
                 {
-                    creatureVoice.PlayOneShot(hissing[enemyRandom.Next(0, hissing.Length - 1)]);
+                    PlayRattleClientRpc();
                 }
 
                 AvoidClosestPlayer(distanceToPlayer);
@@ -272,10 +313,6 @@ namespace ChairMarkerModTest.Enemies
             {
                 stalkingTime = 0;
                 repositionTime = 0;
-                /*creatureVoice.clip = chanting;
-                creatureVoice.time = Random.value * (chanting.length / 4);
-                creatureVoice.Play();*/
-                //creatureVoice.PlayOneShot(chanting);
                 SwitchToBehaviourClientRpc((int)State.Chanting);
             }
 
@@ -343,14 +380,12 @@ namespace ChairMarkerModTest.Enemies
                 target = farthestNodeTransformBackup;
             }
             
-            if (target != null) //&& farthestNodeTransform != lastTraversedNode)
+            if (target != null) 
             {
                 agent.acceleration = 150f;
                 agent.speed = 60f / (distanceToPlayer / 3);
-                Debug.Log("Speed: " + agent.speed + " distance: " + distanceToPlayer);
                 targetNode = farthestNodeTransform;
                 SetDestinationToPosition(targetNode.position);
-                // lastTraversedNode = farthestNodeTransform;
                 return;
             }
             else
