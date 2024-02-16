@@ -1,6 +1,5 @@
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.deps.json
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\ChairMarkerModTest.pdb
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\MonoMod.Utils.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\MonoMod.RuntimeDetour.dll
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\bin\Debug\netstandard2.1\Unity.Animation.Rigging.dll
@@ -98,7 +97,6 @@ D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstanda
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.csproj.CoreCompileInputs.cache
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.csproj.CopyComplete
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.dll
-D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.pdb
 D:\Lethal Company Mods\ChairMarkerModTest\ChairMarkerModTest\obj\Debug\netstandard2.1\ChairMarkerModTest.sourcelink.json
 C:\Users\jlamb\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\Chair Marker\Debug\netstandard2.1\ChairMarkerModTest.deps.json
 C:\Users\jlamb\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\Chair Marker\Debug\netstandard2.1\ChairMarkerModTest.dll

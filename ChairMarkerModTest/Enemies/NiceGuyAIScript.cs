@@ -5,10 +5,8 @@ using GameNetcodeStuff;
 using UnityEngine.Networking;
 
 /* TODO:
- * Stalking state
  * Longer he spends near you more something happens?
  * Bell sounds? the bell tolls!
- * Destroys doors?
  * Walkie talkie -- play sounds if within radius??!? (use WalkieTalkie.TransmitOneShotAudio static method)
  */
 
@@ -112,7 +110,6 @@ namespace ChairMarkerModTest.Enemies
             if(rotationalUpdateTimer >= rotationUpdateThreshold)
             {
                 Debug.Log((State)currentBehaviourStateIndex);
-                Debug.Log("stalkingTime: " + stalkingTime + " threshold: " + stalkingTimeThreshold);
                 rotationalUpdateTimer = 0;
             }
 
@@ -138,6 +135,8 @@ namespace ChairMarkerModTest.Enemies
                     stalkingTime += Time.deltaTime;
                     stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 12.5f;
 
+                    // Stalking();
+
                     break;
 
                 case (int)State.Chanting:
@@ -145,7 +144,7 @@ namespace ChairMarkerModTest.Enemies
 
                     if (!creatureVoice.isPlaying)
                     {
-                        PlayChantClientRpc();
+                        HandleChantClientRpc(false);
                     }
 
                     break;
@@ -172,7 +171,7 @@ namespace ChairMarkerModTest.Enemies
 
         }
 
-       [ClientRpc]
+        [ClientRpc]
         private void PlayRattleClientRpc()
         {
             creatureVoice.PlayOneShot(hissing[enemyRandom.Next(0, hissing.Length - 1)]);
@@ -180,10 +179,16 @@ namespace ChairMarkerModTest.Enemies
         }
 
         [ClientRpc]
-        private void PlayChantClientRpc() // rn this randmoizes the clip starting length, meant for chanting state
+        private void HandleChantClientRpc(bool stop) // rn this randmoizes the clip starting length, meant for chanting state
         {
+            if (stop)
+            {
+                creatureVoice.Stop();
+                return;
+            }
+
             creatureVoice.clip = chanting; 
-            creatureVoice.time = Random.value * (chanting.length / 4);
+            creatureVoice.time = Random.value * (chanting.length / 4); // this doesn't get synced, but i don't think it needs to 
             Debug.Log("clip randomized length: " + creatureVoice.time);
             creatureVoice.Play();
         }
@@ -198,7 +203,6 @@ namespace ChairMarkerModTest.Enemies
         public override void DoAIInterval()
         {
             base.DoAIInterval();
-            // PlayWarningClientRpc();
             
             if(isEnemyDead || StartOfRound.Instance.allPlayersDead)
             {
@@ -272,6 +276,7 @@ namespace ChairMarkerModTest.Enemies
                 }
             }
             if (targetPlayer == null) return false;
+
             return true;
         }
 
@@ -329,11 +334,15 @@ namespace ChairMarkerModTest.Enemies
 
         private void HandlePlayerVision()
         {
-            if (targetPlayer.HasLineOfSightToPosition(leftPos.position) && !isFleeing)
+            for (int i = 0; i < StartOfRound.Instance.connectedPlayersAmount + 1; i++)
             {
-                 StartCoroutine(Flee());
-                 creatureVoice.Stop();
+                if (StartOfRound.Instance.allPlayerScripts[i].HasLineOfSightToPosition(leftPos.position) && !isFleeing)
+                {
+                     StartCoroutine(Flee());
+                     HandleChantClientRpc(true);
+                }
             }
+
         }
 
         private IEnumerator Flee()

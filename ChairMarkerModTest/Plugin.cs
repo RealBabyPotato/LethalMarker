@@ -6,8 +6,6 @@ using LethalLib.Modules;
 using System.IO;
 using System.Reflection;
 using ChairMarkerModTest.Behaviours;
-using JetBrains.Annotations;
-using UnityEngine.Assertions;
 
 namespace ChairMarkerModTest
 {
@@ -54,6 +52,7 @@ namespace ChairMarkerModTest
                 }
             }
         }
+
 
         private void SetupEnemies()
         {
