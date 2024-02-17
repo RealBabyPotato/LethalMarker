@@ -30,6 +30,8 @@ namespace ChairMarkerModTest.Enemies
         public AudioClip warning;
         public AudioClip[] hissing;
 
+        public AudioClip[] footsteps;
+
         public Transform leftPos;
         //public Transform rightPos;
 
@@ -56,13 +58,16 @@ namespace ChairMarkerModTest.Enemies
         private float repositionTime;
         private const float repositionTimerThreshold = 1.3f;
 
+        private float chantingTime;
+        private const float chantingTimeThreshold = 10f;
+        private int numTimesChanted;
+
         #endregion
 
         System.Random enemyRandom;
 
         private bool isFleeing;
 
-        private float angerMeter;
         private const float stalkRange = 15f;
         private const float beginChantRange = 30f;
 
@@ -85,6 +90,8 @@ namespace ChairMarkerModTest.Enemies
             searchRoutine.searchWidth = 20f;
             searchRoutine.searchPrecision = 3;
 
+            creatureAnimator.SetTrigger("startWalk");
+
             enemyRandom = new System.Random(StartOfRound.Instance.randomMapSeed + thisEnemyIndex);
             creatureVoice.volume = 2f;
 
@@ -105,6 +112,7 @@ namespace ChairMarkerModTest.Enemies
         public override void Update()
         {
             base.Update();
+            return;
 
             rotationalUpdateTimer += Time.deltaTime;
             if(rotationalUpdateTimer >= rotationUpdateThreshold)
@@ -116,7 +124,7 @@ namespace ChairMarkerModTest.Enemies
             if (targetPlayer != null && PlayerIsTargetable(targetPlayer) && !searchRoutine.inProgress) 
             {
                 turnCompass.LookAt(targetPlayer.gameplayCamera.transform.position);
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 4f * Time.deltaTime);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y + 180f, 0f)), 4f * Time.deltaTime);
             }
 
             if (stunNormalizedTimer > 0)
@@ -135,23 +143,48 @@ namespace ChairMarkerModTest.Enemies
                     stalkingTime += Time.deltaTime;
                     stalkingTimeThreshold = (float)(enemyRandom.NextDouble() * 1.3) + 12.5f;
 
-                    // Stalking();
-
                     break;
 
                 case (int)State.Chanting:
                     stalkingTime = 0;
+                    chantingTime += Time.deltaTime;
 
-                    if (!creatureVoice.isPlaying)
+                    if(!creatureVoice.isPlaying)
                     {
                         HandleChantClientRpc(false);
+                    }
+
+                    if(chantingTime >= chantingTimeThreshold) // finished chanting cycle
+                    {
+                        chantingTime = 0;
+                        numTimesChanted++;
+
+                        Debug.Log("Num times chanted: " + numTimesChanted);
+
+                        if(numTimesChanted == 4)
+                        {
+                            SwitchToBehaviourClientRpc((int)State.Chasing);
+                        }
+
+                        else
+                        {
+                            HandleChantClientRpc(true);
+                            PlayRattleClientRpc();
+                            SwitchToBehaviourClientRpc((int)State.Searching);
+                        }
+
                     }
 
                     break;
 
                 case (int)State.Fleeing:
                     stalkingTime = 0;
-                    // placeholder state
+
+                    if (!isFleeing)
+                    {
+                        StartCoroutine(Flee());
+                    }
+
                     break;
 
                 case (int)State.Chasing:
@@ -167,42 +200,18 @@ namespace ChairMarkerModTest.Enemies
                     Debug.Log("Current behaviour state doesn't exist!");
                     break;
             }
-
-
         }
 
-        [ClientRpc]
-        private void PlayRattleClientRpc()
+        public void PlayFootstepSound()
         {
-            creatureVoice.PlayOneShot(hissing[enemyRandom.Next(0, hissing.Length - 1)]);
-            Debug.Log("rattling!");
+            creatureSFX.PlayOneShot(footsteps[enemyRandom.Next(0, footsteps.Length - 1)]);
         }
 
-        [ClientRpc]
-        private void HandleChantClientRpc(bool stop) // rn this randmoizes the clip starting length, meant for chanting state
-        {
-            if (stop)
-            {
-                creatureVoice.Stop();
-                return;
-            }
-
-            creatureVoice.clip = chanting; 
-            creatureVoice.time = Random.value * (chanting.length / 4); // this doesn't get synced, but i don't think it needs to 
-            Debug.Log("clip randomized length: " + creatureVoice.time);
-            creatureVoice.Play();
-        }
-
-        [ClientRpc]
-        private void PlayWarningClientRpc()
-        {
-            creatureVoice.PlayOneShot(warning);
-            Debug.Log("PlayWarningClientRpc Called (please show this on the client console :((((");
-        }
 
         public override void DoAIInterval()
         {
             base.DoAIInterval();
+            return;
             
             if(isEnemyDead || StartOfRound.Instance.allPlayersDead)
             {
@@ -259,7 +268,7 @@ namespace ChairMarkerModTest.Enemies
         {
             TargetClosestPlayer(bufferDistance: 1.5f, requireLineOfSight: false);
             if(targetPlayer == null) { return false;  }
-            return targetPlayer != null && Vector3.Distance(transform.position, targetPlayer.transform.position) <= range && this.HasLineOfSightToPosition(targetPlayer.transform.position);
+            return targetPlayer != null && Vector3.Distance(transform.position, targetPlayer.transform.position) <= range;
         }
 
         bool TargetClosestPlayerInAnyCase()
@@ -338,8 +347,9 @@ namespace ChairMarkerModTest.Enemies
             {
                 if (StartOfRound.Instance.allPlayerScripts[i].HasLineOfSightToPosition(leftPos.position) && !isFleeing)
                 {
-                     StartCoroutine(Flee());
-                     HandleChantClientRpc(true);
+                    // StartCoroutine(Flee());
+                    SwitchToBehaviourClientRpc((int)State.Fleeing);
+                    HandleChantClientRpc(true);
                 }
             }
 
@@ -348,14 +358,14 @@ namespace ChairMarkerModTest.Enemies
         private IEnumerator Flee()
         {
             isFleeing = true;
-            SwitchToBehaviourClientRpc((int)State.Fleeing);
+            // SwitchToBehaviourClientRpc((int)State.Fleeing);
 
             while (true)
             {
                 float distanceToPlayer = Vector3.Distance(base.transform.position, targetPlayer.transform.position);
                 
                 // player has successfully scared off nice guy
-                if(distanceToPlayer >= 50)
+                if(distanceToPlayer >= 45)
                 {
                     isFleeing = false;
                     SwitchToBehaviourClientRpc((int)State.Searching);
@@ -372,18 +382,8 @@ namespace ChairMarkerModTest.Enemies
         {
 
             Transform farthestNodeTransform = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: true);
-            Transform farthestNodeTransformBackup = ChooseFarthestNodeFromPosition(targetPlayer.transform.position, avoidLineOfSight: false);
-            Transform target;
             
-            if(Vector3.Distance(farthestNodeTransform.position, targetPlayer.transform.position) > Vector3.Distance(farthestNodeTransformBackup.position, targetPlayer.transform.position)){
-                target = farthestNodeTransform;
-            }
-            else
-            {
-                target = farthestNodeTransformBackup;
-            }
-            
-            if (target != null) 
+            if (farthestNodeTransform != null) 
             {
                 agent.acceleration = 150f;
                 agent.speed = 60f / (distanceToPlayer / 3);
@@ -396,6 +396,32 @@ namespace ChairMarkerModTest.Enemies
                 SwitchToBehaviourClientRpc((int)State.Attacking); 
             }
 
+        }
+
+        [ClientRpc]
+        private void PlayRattleClientRpc()
+        {
+            creatureVoice.PlayOneShot(hissing[enemyRandom.Next(0, hissing.Length - 1)]);
+        }
+
+        [ClientRpc]
+        private void HandleChantClientRpc(bool stop) // rn this randmoizes the clip starting length, meant for chanting state
+        {
+            if (stop)
+            {
+                creatureVoice.Stop();
+                return;
+            }
+
+            creatureVoice.clip = chanting; 
+            creatureVoice.time = Random.value * (chanting.length / 4); // this doesn't get synced, but i don't think it needs to 
+            creatureVoice.Play();
+        }
+
+        [ClientRpc]
+        private void PlayWarningClientRpc()
+        {
+            creatureVoice.PlayOneShot(warning);
         }
     }
 }
