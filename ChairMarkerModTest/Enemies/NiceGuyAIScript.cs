@@ -4,6 +4,7 @@ using UnityEngine;
 using GameNetcodeStuff;
 using UnityEngine.Networking;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
 /* TODO:
  * Longer he spends near you more something happens?
@@ -80,6 +81,8 @@ namespace ChairMarkerModTest.Enemies
 
         private Color col;
 
+        private Vector3 expectedPos;
+
         enum State
         {
             Searching,
@@ -99,14 +102,14 @@ namespace ChairMarkerModTest.Enemies
             StartSearch(transform.position);
 
             //agent.angularSpeed = 20f;
-            agent.angularSpeed = 1000f;
+            agent.angularSpeed = 1000f; // helps with janky positioning when rotating
 
             UseDefaultWalkSettings();
 
             col = bodyMaterial.color;
 
             enemyRandom = new System.Random(StartOfRound.Instance.randomMapSeed + thisEnemyIndex);
-            creatureVoice.volume = 2f;
+            creatureVoice.volume = 1.6f;
 
         }
 
@@ -125,6 +128,8 @@ namespace ChairMarkerModTest.Enemies
         {
             base.Update();
 
+            Debug.Log("current pos: " + base.transform.position + " expected pos: " + expectedPos);
+
             rotationalUpdateTimer += Time.deltaTime;
             if(rotationalUpdateTimer >= rotationUpdateThreshold)
             {
@@ -141,6 +146,12 @@ namespace ChairMarkerModTest.Enemies
             switch (currentBehaviourStateIndex)
             {
                 case (int)State.Searching:
+
+                    if(bodyMaterial.color != col)
+                    {
+                        bodyMaterial.color = col;
+                    }
+
                     stalkingTime = 0;
                     break;
 
@@ -213,6 +224,7 @@ namespace ChairMarkerModTest.Enemies
                     break;
 
                 case (int)State.Fleeing:
+
                     stalkingTime = 0;
 
                     if (!isFleeing)
@@ -258,6 +270,7 @@ namespace ChairMarkerModTest.Enemies
                 case (int)State.Searching:
                     agent.speed = 5f;
                     agent.acceleration = 8f;
+                    UseDefaultWalkSettings();
 
                     if (FoundClosestPlayerInRange(stalkRange))
                     {
@@ -270,7 +283,7 @@ namespace ChairMarkerModTest.Enemies
                 case (int)State.Stalking:
                     if (!TargetClosestPlayerInAnyCase())  
                     {
-                        UseDefaultWalkSettings();
+                        // UseDefaultWalkSettings();
                         StartSearch(transform.position);
                         SwitchToBehaviourClientRpc((int)State.Searching);
                         return;
@@ -339,7 +352,7 @@ namespace ChairMarkerModTest.Enemies
             // player is too close -- reposition or get angry!
             if (distanceToPlayer <= stalkRange || targetPlayer.HasLineOfSightToPosition(base.transform.position))
             {
-                repositionTime += Time.deltaTime;
+                /*repositionTime += Time.deltaTime;
 
                 // switch to aggressive if player follows around too much while fleeing
                 if(repositionTime >= repositionTimerThreshold)
@@ -347,10 +360,10 @@ namespace ChairMarkerModTest.Enemies
                     repositionTime = 0;
                     PlayWarningClientRpc();
                     SwitchToBehaviourClientRpc((int)State.Chasing);
-                } else if(repositionTime % (repositionTimerThreshold/4) <= 0.05 && !creatureVoice.isPlaying)
+                } else if(repositionTime % (repositionTimerThreshold/4) <= 0.05 && !creatureVoice.isPlaying) // 
                 {
                     PlayRattleClientRpc();
-                }
+                }*/
 
                 AvoidClosestPlayer(distanceToPlayer);
 
@@ -377,7 +390,6 @@ namespace ChairMarkerModTest.Enemies
         {
             HandlePlayerVision();
 
-            // DoAnimationClientRpc("stopWalk");
             agent.speed = 0f;
         }
 
@@ -401,12 +413,14 @@ namespace ChairMarkerModTest.Enemies
             isFleeing = true;
 
             // wave animation!!
+
             DoAnimationClientRpc("stopWalk");
             StopSearch(currentSearch);
 
+            Color col = bodyMaterial.color;
+
             for(int i = 200; i > -1; i--)
             {
-                Color col = bodyMaterial.color;
                 col.a = i;
                 bodyMaterial.color = col;
 
@@ -415,35 +429,47 @@ namespace ChairMarkerModTest.Enemies
 
             while (true)
             {
+
                 Vector3 telePos = RoundManager.Instance.insideAINodes[enemyRandom.Next(0, RoundManager.Instance.insideAINodes.Length)].transform.position;
-                telePos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(telePos, 10f, default(NavMeshHit), enemyRandom);
+                //Transform floorNode = RoundManager.Instance.allEnemyVents[enemyRandom.Next(0, RoundManager.Instance.allEnemyVents.Length)].floorNode;
+                //Vector3 telePos = floorNode.position; 
+                telePos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(telePos, 30f, default(NavMeshHit), enemyRandom);
 
                 float distanceToPlayer = Vector3.Distance(telePos, targetPlayer.transform.position);
-                Debug.Log("trying tele: " + distanceToPlayer);
+                Debug.Log("trying tele: " + distanceToPlayer + " with vent pos: " + telePos + " num vents: " + RoundManager.Instance.allEnemyVents.Length);
                 
                 // player has successfully scared off nice guy
-                if(distanceToPlayer >= 50)
+                if(!NearOtherPlayers(telePos, 50f))
                 {
-                    base.transform.position = telePos; // actually teleport
+                    expectedPos = telePos;
+
+                    agent.Warp(telePos);
+
                     SyncPositionToClients();
 
-                    yield return new WaitForSeconds(0.3f);
-
                     isFleeing = false;
+                    bodyMaterial.color = col;
 
-                    SwitchToBehaviourClientRpc((int)State.Searching);
                     UseDefaultWalkSettings();
+                    SwitchToBehaviourClientRpc((int)State.Searching);
                     StartSearch(telePos);
 
-                    bodyMaterial.color = col;
+                    // SwitchToBehaviourClientRpc((int)State.Chasing);
+
 
                     yield break;
                 }
 
                 yield return null;
-                //yield return new WaitForSeconds(0.25f);
-
             }
+        }
+
+        private bool NearOtherPlayers(Vector3 checkPos, float checkRadius)
+        {
+            base.gameObject.layer = 0;
+            bool result = Physics.CheckSphere(checkPos, checkRadius, 8, QueryTriggerInteraction.Ignore);
+            base.gameObject.layer = 19;
+            return result;
         }
 
         private void AvoidClosestPlayer(float distanceToPlayer = 1f)
@@ -454,7 +480,7 @@ namespace ChairMarkerModTest.Enemies
             if (farthestNodeTransform != null) 
             {
                 agent.acceleration = 150f;
-                agent.speed = 60f / (distanceToPlayer / 3);
+                agent.speed = 40f / (distanceToPlayer / 3);
 
                 if(distanceToPlayer >= 5f)
                 {
@@ -482,21 +508,18 @@ namespace ChairMarkerModTest.Enemies
         {
             DoAnimationClientRpc("startWalk");
             ChangeAnimatorSpeedClientRpc(1);
-            Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! default walk");
         }
 
         [ClientRpc]
         public void DoAnimationClientRpc(string animationName)
         {
             creatureAnimator.SetTrigger(animationName);
-            Debug.Log("Setting animation: " + animationName);
         }
 
         [ClientRpc]
         private void ChangeAnimatorSpeedClientRpc(float speed)
         {
             creatureAnimator.speed = speed;
-            Debug.Log("! ! ! Changing animator speed: " + speed);
         }
 
         [ClientRpc]
