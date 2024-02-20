@@ -17,6 +17,7 @@ namespace ChairMarkerModTest.Behaviours
             if (weatherChange == 5) { weatherChange = -1; }
             else { weatherChange++; }
 
+
             HUDManager.Instance.DisplayTip("WEATHER", "Weather type: " + (LevelWeatherType)weatherChange, false, false, "LC_Tip1");
         }
 

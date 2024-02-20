@@ -46,8 +46,6 @@ namespace ChairMarkerModTest.Enemies
         public Transform turnCompass;
         public Material bodyMaterial;
 
-        //private NetworkVariable<float> stalkingTimerSynced = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-
         public AISearchRoutine searchRoutine;
 
         #region timers
@@ -76,8 +74,8 @@ namespace ChairMarkerModTest.Enemies
         private bool isFleeing;
         private bool isChanting;
 
-        private const float stalkRange = 15f;
-        private const float beginChantRange = 30f;
+        private const float stalkRange = 22f;
+        private const float beginChantRange = 34f;
 
         private Color col;
 
@@ -128,12 +126,9 @@ namespace ChairMarkerModTest.Enemies
         {
             base.Update();
 
-            Debug.Log("current pos: " + base.transform.position + " expected pos: " + expectedPos);
-
             rotationalUpdateTimer += Time.deltaTime;
             if(rotationalUpdateTimer >= rotationUpdateThreshold)
             {
-                //Debug.Log("State: " + (State)currentBehaviourStateIndex + " repositionTimer: " + repositionTime + " stalkngTime: " + stalkingTime + " stalkingTimeThreshold: " + stalkingTimeThreshold + " chatningTime: " + chantingTime);
                 Debug.Log((State)currentBehaviourStateIndex);
                 rotationalUpdateTimer = 0;
             }
@@ -166,6 +161,7 @@ namespace ChairMarkerModTest.Enemies
 
                         if(idleTime > 0.6f && !isFleeing)
                         {
+                            DoAnimationClientRpc("stopWalk");
                             Debug.Log("ASSUMING NO NODES AVAILABLE, FLEEING");
                             SwitchToBehaviourClientRpc((int)State.Fleeing);
                             return;
@@ -293,6 +289,7 @@ namespace ChairMarkerModTest.Enemies
                     break;
 
                 case (int)State.Chanting:
+                    DoAnimationClientRpc("stopWalk"); // this is just to make sure that NiceGuy actually stops walkibng while chanting
                     Chanting();
                     break;
 
@@ -335,6 +332,7 @@ namespace ChairMarkerModTest.Enemies
                 }
             }
             if (targetPlayer == null) return false;
+            if (!targetPlayer.isInsideFactory) return false;
 
             return true;
         }
@@ -349,25 +347,17 @@ namespace ChairMarkerModTest.Enemies
                 return;
             }
 
-            // player is too close -- reposition or get angry!
-            if (distanceToPlayer <= stalkRange || targetPlayer.HasLineOfSightToPosition(base.transform.position))
+            // player is too close -- speed up
+            if (targetPlayer.HasLineOfSightToPosition(base.transform.position))
             {
-                /*repositionTime += Time.deltaTime;
-
-                // switch to aggressive if player follows around too much while fleeing
-                if(repositionTime >= repositionTimerThreshold)
-                {
-                    repositionTime = 0;
-                    PlayWarningClientRpc();
-                    SwitchToBehaviourClientRpc((int)State.Chasing);
-                } else if(repositionTime % (repositionTimerThreshold/4) <= 0.05 && !creatureVoice.isPlaying) // 
-                {
-                    PlayRattleClientRpc();
-                }*/
-
-                AvoidClosestPlayer(distanceToPlayer);
-
+                Debug.Log("Player has line of sight, running away faster");
+                AvoidClosestPlayer(distanceToPlayer / 2);
                 return;
+            } else if (distanceToPlayer <= stalkRange)
+            {
+                AvoidClosestPlayer(distanceToPlayer);
+                return;
+
             } else if(stalkingTime >= stalkingTimeThreshold && distanceToPlayer <= beginChantRange)
             {
                 stalkingTime = 0;
@@ -421,6 +411,12 @@ namespace ChairMarkerModTest.Enemies
 
             for(int i = 200; i > -1; i--)
             {
+                if (targetPlayer != null)
+                {
+                    turnCompass.LookAt(targetPlayer.gameplayCamera.transform.position);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, turnCompass.eulerAngles.y, 0f)), 4f * Time.deltaTime);
+                }
+
                 col.a = i;
                 bodyMaterial.color = col;
 
