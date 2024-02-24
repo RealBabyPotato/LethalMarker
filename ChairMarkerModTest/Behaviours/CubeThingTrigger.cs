@@ -11,10 +11,10 @@ namespace ChairMarkerModTest.Behaviours
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!itemScript.isHeld && (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Enemy")))
-            {
-                Debug.Log("Collided");
-            }
+            //if (!itemScript.isHeld && (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Enemy")))
+            //{
+                //Debug.Log("Collided");
+            //}
         }
     }
 }

@@ -202,9 +202,10 @@ namespace ChairMarkerModTest.Enemies
 
                         Debug.Log("Num times chanted: " + numTimesChanted + " TARGETPLAYER: " + targetPlayer.playerUsername);
 
-                        if(numTimesChanted == 4)
+                        if(numTimesChanted >= 1) //                 change! - ---- - - -------------------------------------------------
                         {
                             UseDefaultWalkSettings();
+                            HandleChantClientRpc(true);
                             SwitchToBehaviourClientRpc((int)State.Chasing);
                         }
 
@@ -298,7 +299,16 @@ namespace ChairMarkerModTest.Enemies
                     break;
 
                 case (int)State.Chasing:
-                    Debug.Log("chasing");
+                    StopSearch(currentSearch);
+
+                    agent.speed = 12f;
+                    UseDefaultWalkSettings();
+                    ChangeAnimatorSpeedClientRpc(2f);
+                    TargetClosestPlayerInAnyCase();
+
+                    Vector3 attackPos = targetPlayer.transform.position - Vector3.Scale(new Vector3(0, 0, -5), targetPlayer.transform.forward);
+                    SetDestinationToPosition(attackPos);
+                    //ChooseClosestNodeToPosition(targetPlayer.transform.position);
                     break;
 
                 case (int)State.Attacking:
@@ -486,7 +496,6 @@ namespace ChairMarkerModTest.Enemies
                 {
                     ChangeAnimatorSpeedClientRpc(3f);
                 }
-
 
                 targetNode = farthestNodeTransform;
                 SetDestinationToPosition(targetNode.position);
